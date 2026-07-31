@@ -17,7 +17,7 @@ body {
     margin:0;
     background:#111827;
     color:white;
-    font-family:Arial, sans-serif;
+    font-family:Arial,sans-serif;
     height:100vh;
     display:flex;
     justify-content:center;
@@ -25,98 +25,68 @@ body {
 }
 
 .app {
-
     width:95%;
     max-width:500px;
     background:#1f2937;
     border-radius:20px;
     padding:20px;
     box-shadow:0 0 30px #000;
-
 }
 
 h1 {
-
     text-align:center;
-
 }
-
 
 .avatar {
-
-    font-size:80px;
     text-align:center;
-
+    font-size:80px;
 }
-
 
 #chat {
-
     background:#111827;
-    min-height:200px;
+    min-height:220px;
     margin:20px 0;
-    border-radius:15px;
     padding:10px;
+    border-radius:15px;
     overflow:auto;
-
 }
 
-
 input {
-
     width:65%;
     padding:12px;
     border-radius:10px;
-    border:none;
-
+    border:0;
 }
 
-
-.send {
-
-    width:25%;
-    padding:12px;
-    border:none;
-    border-radius:10px;
+button {
+    padding:14px;
+    border:0;
+    border-radius:15px;
     background:#2563eb;
     color:white;
-
+    font-size:15px;
 }
 
+.send {
+    width:25%;
+}
 
 .buttons {
-
     display:grid;
     grid-template-columns:1fr 1fr;
     gap:10px;
-
 }
-
-
-button {
-
-    padding:15px;
-    border:none;
-    border-radius:15px;
-    background:#2563eb;
-    color:white;
-    font-size:16px;
-
-}
-
-
-button:hover {
-
-    background:#1d4ed8;
-
-}
-
 
 video {
-
+    width:100%;
     margin-top:15px;
     border-radius:15px;
+}
 
+img {
+    width:100%;
+    border-radius:15px;
+    margin-top:10px;
 }
 
 </style>
@@ -146,40 +116,25 @@ video {
 
 
 
-<input id="msg" placeholder="Napisz coś...">
+<input id="msg" placeholder="Zapytaj mnie...">
 
 <button class="send" onclick="sendMessage()">
 Wyślij
 </button>
 
 
-
 <br><br>
-
 
 
 <div class="buttons">
 
+<button onclick="startVoice()">🎤 Głos</button>
 
-<button onclick="startVoice()">
-🎤 Głos
-</button>
+<button onclick="startCamera()">📷 Kamera</button>
 
+<button onclick="searchWeb()">🌐 Internet</button>
 
-<button onclick="startCamera()">
-📷 Kamera
-</button>
-
-
-<button onclick="searchWeb()">
-🌐 Internet
-</button>
-
-
-<button onclick="memory()">
-🧠 Pamięć
-</button>
-
+<button onclick="memory()">🧠 Pamięć</button>
 
 </div>
 
@@ -191,32 +146,74 @@ Wyślij
 <script>
 
 
-function sendMessage(){
-
-
-let input=document.getElementById("msg");
+function addMessage(text){
 
 let chat=document.getElementById("chat");
 
+chat.innerHTML += "<p>"+text+"</p>";
 
-if(input.value.trim()=="") return;
+chat.scrollTop=chat.scrollHeight;
 
-
-
-chat.innerHTML += 
-"<p><b>Ty:</b> "+input.value+"</p>";
+}
 
 
 
-chat.innerHTML +=
-"<p><b>Wariat AI:</b> Zapisałem wiadomość. Podłączymy teraz prawdziwe AI.</p>";
+function sendMessage(){
+
+let input=document.getElementById("msg");
+
+if(input.value=="") return;
 
 
+addMessage("<b>Ty:</b> "+input.value);
+
+addMessage("<b>Wariat AI:</b> Zapamiętałem pytanie. Następny etap podłączymy prawdziwy mózg AI.");
 
 input.value="";
 
+}
 
-chat.scrollTop = chat.scrollHeight;
+
+
+
+
+function searchWeb(){
+
+
+let pytanie =
+prompt("Czego mam poszukać?");
+
+
+if(!pytanie) return;
+
+
+
+addMessage(
+"<b>Wariat AI:</b> Szukam: "+pytanie
+);
+
+
+
+let google =
+"https://www.google.com/search?q="
++encodeURIComponent(pytanie);
+
+
+
+let grafika =
+"https://www.google.com/search?tbm=isch&q="
++encodeURIComponent(pytanie);
+
+
+
+addMessage(
+"🔎 <a style='color:#60a5fa' target='_blank' href='"+google+"'>Otwórz wyniki</a>"
+);
+
+
+addMessage(
+"📷 <a style='color:#60a5fa' target='_blank' href='"+grafika+"'>Zobacz zdjęcia</a>"
+);
 
 
 }
@@ -228,58 +225,39 @@ chat.scrollTop = chat.scrollHeight;
 let recognition;
 
 
-
 function startVoice(){
-
 
 
 if(!('webkitSpeechRecognition' in window)){
 
-
-alert("Użyj Chrome na Androidzie do obsługi głosu.");
+alert("Otwórz aplikację w Chrome na Androidzie.");
 
 return;
-
 
 }
 
 
-
-recognition = new webkitSpeechRecognition();
-
+recognition=new webkitSpeechRecognition();
 
 recognition.lang="pl-PL";
 
 
-recognition.continuous=false;
+recognition.onresult=function(e){
 
+let tekst=e.results[0][0].transcript;
 
-
-recognition.onresult=function(event){
-
-
-let text =
-event.results[0][0].transcript;
-
-
-
-document.getElementById("msg").value=text;
-
-
+document.getElementById("msg").value=tekst;
 
 sendMessage();
 
-
-
 };
-
 
 
 recognition.start();
 
 
-
 }
+
 
 
 
@@ -289,25 +267,20 @@ recognition.start();
 function startCamera(){
 
 
-
 navigator.mediaDevices.getUserMedia({
 
 video:true
 
 })
 
-
 .then(stream=>{
 
 
 let video=document.createElement("video");
 
-
 video.srcObject=stream;
 
-
 video.autoplay=true;
-
 
 video.playsInline=true;
 
@@ -315,32 +288,14 @@ video.playsInline=true;
 document.querySelector(".app").appendChild(video);
 
 
-
 })
 
 
 .catch(()=>{
 
-
-alert("Nie udało się uruchomić kamery.");
-
+alert("Brak dostępu do kamery.");
 
 });
-
-
-
-}
-
-
-
-
-
-
-
-function searchWeb(){
-
-
-alert("Moduł wyszukiwania internetu dodamy teraz jako następny etap.");
 
 
 }
@@ -353,7 +308,9 @@ alert("Moduł wyszukiwania internetu dodamy teraz jako następny etap.");
 function memory(){
 
 
-alert("Moduł pamięci AI będzie kolejnym modułem.");
+addMessage(
+"🧠 Pamięć lokalna zostanie dodana w następnym module."
+);
 
 
 }
@@ -365,9 +322,7 @@ alert("Moduł pamięci AI będzie kolejnym modułem.");
 
 if("serviceWorker" in navigator){
 
-
 navigator.serviceWorker.register("sw.js");
-
 
 }
 
@@ -376,5 +331,4 @@ navigator.serviceWorker.register("sw.js");
 
 
 </body>
-
 </html>
