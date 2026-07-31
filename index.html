@@ -18,7 +18,7 @@ body {
     background:#111827;
     color:white;
     font-family:Arial,sans-serif;
-    height:100vh;
+    min-height:100vh;
     display:flex;
     justify-content:center;
     align-items:center;
@@ -55,12 +55,12 @@ input {
     width:65%;
     padding:12px;
     border-radius:10px;
-    border:0;
+    border:none;
 }
 
 button {
     padding:14px;
-    border:0;
+    border:none;
     border-radius:15px;
     background:#2563eb;
     color:white;
@@ -83,10 +83,8 @@ video {
     border-radius:15px;
 }
 
-img {
-    width:100%;
-    border-radius:15px;
-    margin-top:10px;
+a {
+    color:#60a5fa;
 }
 
 </style>
@@ -109,14 +107,12 @@ img {
 
 
 <div id="chat">
-
 <p>Wariat AI: Siema 👋 Jestem gotowy.</p>
-
 </div>
 
 
 
-<input id="msg" placeholder="Zapytaj mnie...">
+<input id="msg" placeholder="Napisz pytanie...">
 
 <button class="send" onclick="sendMessage()">
 Wyślij
@@ -162,12 +158,23 @@ function sendMessage(){
 
 let input=document.getElementById("msg");
 
-if(input.value=="") return;
+let text=input.value.trim();
 
 
-addMessage("<b>Ty:</b> "+input.value);
+if(text==="") return;
 
-addMessage("<b>Wariat AI:</b> Zapamiętałem pytanie. Następny etap podłączymy prawdziwy mózg AI.");
+
+addMessage("<b>Ty:</b> "+text);
+
+
+addMessage("<b>Wariat AI:</b> Otrzymałem wiadomość. Podłączamy teraz prawdziwą inteligencję.");
+
+
+localStorage.setItem(
+"ostatnia_wiadomosc",
+text
+);
+
 
 input.value="";
 
@@ -179,44 +186,48 @@ input.value="";
 
 function searchWeb(){
 
-
-let pytanie =
-prompt("Czego mam poszukać?");
+let pytanie = prompt(
+"Czego mam poszukać?"
+);
 
 
 if(!pytanie) return;
 
 
-
 addMessage(
-"<b>Wariat AI:</b> Szukam: "+pytanie
+"🌐 Szukam informacji: <b>"+pytanie+"</b>"
 );
 
 
+let tekst =
+encodeURIComponent(pytanie);
 
-let google =
+
+
+let wyniki =
 "https://www.google.com/search?q="
-+encodeURIComponent(pytanie);
++tekst;
 
 
-
-let grafika =
+let zdjecia =
 "https://www.google.com/search?tbm=isch&q="
-+encodeURIComponent(pytanie);
++tekst;
 
 
 
 addMessage(
-"🔎 <a style='color:#60a5fa' target='_blank' href='"+google+"'>Otwórz wyniki</a>"
+"🔎 <a target='_blank' href='"+wyniki+"'>Otwórz wyniki wyszukiwania</a>"
 );
 
 
 addMessage(
-"📷 <a style='color:#60a5fa' target='_blank' href='"+grafika+"'>Zobacz zdjęcia</a>"
+"📷 <a target='_blank' href='"+zdjecia+"'>Zobacz zdjęcia</a>"
 );
 
 
 }
+
+
 
 
 
@@ -228,27 +239,41 @@ let recognition;
 function startVoice(){
 
 
-if(!('webkitSpeechRecognition' in window)){
+if(!("webkitSpeechRecognition" in window)){
 
-alert("Otwórz aplikację w Chrome na Androidzie.");
+
+alert(
+"Uruchom aplikację w Google Chrome na Androidzie."
+);
+
 
 return;
+
 
 }
 
 
-recognition=new webkitSpeechRecognition();
+recognition =
+new webkitSpeechRecognition();
+
+
 
 recognition.lang="pl-PL";
 
 
-recognition.onresult=function(e){
 
-let tekst=e.results[0][0].transcript;
+recognition.onresult=function(event){
+
+
+let tekst =
+event.results[0][0].transcript;
+
 
 document.getElementById("msg").value=tekst;
 
+
 sendMessage();
+
 
 };
 
@@ -273,14 +298,19 @@ video:true
 
 })
 
-.then(stream=>{
+
+.then(function(stream){
 
 
-let video=document.createElement("video");
+let video =
+document.createElement("video");
+
 
 video.srcObject=stream;
 
+
 video.autoplay=true;
+
 
 video.playsInline=true;
 
@@ -291,9 +321,11 @@ document.querySelector(".app").appendChild(video);
 })
 
 
-.catch(()=>{
+.catch(function(){
 
-alert("Brak dostępu do kamery.");
+alert(
+"Nie udało się uruchomić kamery."
+);
 
 });
 
@@ -305,12 +337,31 @@ alert("Brak dostępu do kamery.");
 
 
 
+
+
 function memory(){
 
 
-addMessage(
-"🧠 Pamięć lokalna zostanie dodana w następnym module."
+let zapisana =
+localStorage.getItem(
+"ostatnia_wiadomosc"
 );
+
+
+if(zapisana){
+
+addMessage(
+"🧠 Ostatnio pisałeś: "+zapisana
+);
+
+}
+else{
+
+addMessage(
+"🧠 Jeszcze nic nie pamiętam."
+);
+
+}
 
 
 }
@@ -322,7 +373,7 @@ addMessage(
 
 if("serviceWorker" in navigator){
 
-navigator.serviceWorker.register("sw.js");
+navigator.serviceWorker.register("sw.js?v=2");
 
 }
 
@@ -331,4 +382,5 @@ navigator.serviceWorker.register("sw.js");
 
 
 </body>
+
 </html>
