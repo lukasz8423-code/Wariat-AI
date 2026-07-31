@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Wariat AI</title>
+<title>Wariat AI V3</title>
 
 <link rel="manifest" href="manifest.json">
 
@@ -13,78 +13,74 @@
 
 <style>
 
-body {
-    margin:0;
-    background:#111827;
-    color:white;
-    font-family:Arial,sans-serif;
-    min-height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
+body{
+margin:0;
+background:#111827;
+color:white;
+font-family:Arial;
+min-height:100vh;
+display:flex;
+align-items:center;
+justify-content:center;
 }
 
-.app {
-    width:95%;
-    max-width:500px;
-    background:#1f2937;
-    border-radius:20px;
-    padding:20px;
-    box-shadow:0 0 30px #000;
+.app{
+width:95%;
+max-width:500px;
+background:#1f2937;
+padding:20px;
+border-radius:20px;
+box-shadow:0 0 30px black;
 }
 
-h1 {
-    text-align:center;
+h1{
+text-align:center;
 }
 
-.avatar {
-    text-align:center;
-    font-size:80px;
+.avatar{
+font-size:80px;
+text-align:center;
 }
 
-#chat {
-    background:#111827;
-    min-height:220px;
-    margin:20px 0;
-    padding:10px;
-    border-radius:15px;
-    overflow:auto;
+#chat{
+background:#111827;
+padding:10px;
+height:250px;
+overflow:auto;
+border-radius:15px;
+margin:20px 0;
 }
 
-input {
-    width:65%;
-    padding:12px;
-    border-radius:10px;
-    border:none;
+input{
+width:65%;
+padding:12px;
+border-radius:10px;
+border:0;
 }
 
-button {
-    padding:14px;
-    border:none;
-    border-radius:15px;
-    background:#2563eb;
-    color:white;
-    font-size:15px;
+button{
+padding:14px;
+border:0;
+border-radius:15px;
+background:#2563eb;
+color:white;
+margin-top:10px;
 }
 
-.send {
-    width:25%;
+.buttons{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px;
 }
 
-.buttons {
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:10px;
+video{
+width:100%;
+margin-top:15px;
+border-radius:15px;
 }
 
-video {
-    width:100%;
-    margin-top:15px;
-    border-radius:15px;
-}
-
-a {
-    color:#60a5fa;
+a{
+color:#60a5fa;
 }
 
 </style>
@@ -98,7 +94,7 @@ a {
 <div class="app">
 
 
-<h1>🤖 Wariat AI</h1>
+<h1>🤖 Wariat AI V3</h1>
 
 
 <div class="avatar">
@@ -107,19 +103,18 @@ a {
 
 
 <div id="chat">
-<p>Wariat AI: Siema 👋 Jestem gotowy.</p>
+
+<p>Wariat AI: Nowa wersja uruchomiona ✅</p>
+
 </div>
 
 
+<input id="msg" placeholder="Napisz pytanie">
 
-<input id="msg" placeholder="Napisz pytanie...">
 
-<button class="send" onclick="sendMessage()">
+<button onclick="sendMessage()">
 Wyślij
 </button>
-
-
-<br><br>
 
 
 <div class="buttons">
@@ -158,21 +153,14 @@ function sendMessage(){
 
 let input=document.getElementById("msg");
 
-let text=input.value.trim();
+if(input.value==="") return;
 
 
-if(text==="") return;
+addMessage("Ty: "+input.value);
 
 
-addMessage("<b>Ty:</b> "+text);
-
-
-addMessage("<b>Wariat AI:</b> Otrzymałem wiadomość. Podłączamy teraz prawdziwą inteligencję.");
-
-
-localStorage.setItem(
-"ostatnia_wiadomosc",
-text
+addMessage(
+"Wariat AI: Otrzymałem wiadomość. Moduł AI będzie kolejnym etapem."
 );
 
 
@@ -186,47 +174,33 @@ input.value="";
 
 function searchWeb(){
 
-let pytanie = prompt(
+let pytanie=prompt(
 "Czego mam poszukać?"
 );
 
 
-if(!pytanie) return;
+if(!pytanie)return;
 
 
 addMessage(
-"🌐 Szukam informacji: <b>"+pytanie+"</b>"
+"Wariat AI szuka: "+pytanie
 );
 
 
-let tekst =
-encodeURIComponent(pytanie);
-
-
-
-let wyniki =
-"https://www.google.com/search?q="
-+tekst;
-
-
-let zdjecia =
-"https://www.google.com/search?tbm=isch&q="
-+tekst;
-
+let tekst=encodeURIComponent(pytanie);
 
 
 addMessage(
-"🔎 <a target='_blank' href='"+wyniki+"'>Otwórz wyniki wyszukiwania</a>"
+"🔎 <a target='_blank' href='https://www.google.com/search?q="+tekst+"'>Wyniki</a>"
 );
 
 
 addMessage(
-"📷 <a target='_blank' href='"+zdjecia+"'>Zobacz zdjęcia</a>"
+"📷 <a target='_blank' href='https://www.google.com/search?tbm=isch&q="+tekst+"'>Zdjęcia</a>"
 );
 
 
 }
-
 
 
 
@@ -239,41 +213,27 @@ let recognition;
 function startVoice(){
 
 
-if(!("webkitSpeechRecognition" in window)){
+if(!window.webkitSpeechRecognition){
 
-
-alert(
-"Uruchom aplikację w Google Chrome na Androidzie."
-);
-
+alert("Użyj Chrome na Androidzie");
 
 return;
-
 
 }
 
 
-recognition =
-new webkitSpeechRecognition();
-
-
+recognition=new webkitSpeechRecognition();
 
 recognition.lang="pl-PL";
 
 
+recognition.onresult=function(e){
 
-recognition.onresult=function(event){
-
-
-let tekst =
-event.results[0][0].transcript;
-
-
-document.getElementById("msg").value=tekst;
+document.getElementById("msg").value =
+e.results[0][0].transcript;
 
 
 sendMessage();
-
 
 };
 
@@ -293,24 +253,17 @@ function startCamera(){
 
 
 navigator.mediaDevices.getUserMedia({
-
 video:true
-
 })
 
+.then(stream=>{
 
-.then(function(stream){
 
-
-let video =
-document.createElement("video");
-
+let video=document.createElement("video");
 
 video.srcObject=stream;
 
-
 video.autoplay=true;
-
 
 video.playsInline=true;
 
@@ -320,12 +273,9 @@ document.querySelector(".app").appendChild(video);
 
 })
 
+.catch(()=>{
 
-.catch(function(){
-
-alert(
-"Nie udało się uruchomić kamery."
-);
+alert("Brak dostępu do kamery");
 
 });
 
@@ -337,28 +287,24 @@ alert(
 
 
 
-
-
 function memory(){
 
 
-let zapisana =
-localStorage.getItem(
-"ostatnia_wiadomosc"
-);
+let data=localStorage.getItem("ostatnie");
 
 
-if(zapisana){
+if(data){
 
 addMessage(
-"🧠 Ostatnio pisałeś: "+zapisana
+"🧠 Pamiętam: "+data
 );
 
 }
+
 else{
 
 addMessage(
-"🧠 Jeszcze nic nie pamiętam."
+"🧠 Brak zapisanej pamięci"
 );
 
 }
@@ -373,7 +319,7 @@ addMessage(
 
 if("serviceWorker" in navigator){
 
-navigator.serviceWorker.register("sw.js?v=2");
+navigator.serviceWorker.register("sw.js?v=3");
 
 }
 
