@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Wariat AI</title>
+
+<style>
+body {
+    margin:0;
+    background:#111827;
+    color:white;
+    font-family:Arial, sans-serif;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.app {
+    width:95%;
+    max-width:500px;
+    background:#1f2937;
+    border-radius:20px;
+    padding:20px;
+    box-shadow:0 0 30px #000;
+}
+
+h1 {
+    text-align:center;
+}
+
+.avatar {
+    font-size:80px;
+    text-align:center;
+}
+
+.buttons {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+}
+
+button {
+    padding:15px;
+    border:none;
+    border-radius:15px;
+    background:#2563eb;
+    color:white;
+    font-size:16px;
+}
+
+button:hover {
+    background:#1d4ed8;
+}
+
+#chat {
+    background:#111827;
+    min-height:200px;
+    margin:20px 0;
+    border-radius:15px;
+    padding:10px;
+    overflow:auto;
+}
+
+input {
+    width:70%;
+    padding:12px;
+    border-radius:10px;
+    border:none;
+}
+
+.send {
+    width:25%;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="app">
+
+<h1>🤖 Wariat AI</h1>
+
+<div class="avatar">
+🙂
+</div>
+
+<div id="chat">
+<p>Wariat AI: Siema 👋 Jestem gotowy.</p>
+</div>
+
+<input id="msg" placeholder="Napisz coś...">
+
+<button class="send" onclick="sendMessage()">Wyślij</button>
+
+<br><br>
+
+<div class="buttons">
+
+<button onclick="startVoice()">🎤 Głos</button>
+
+<button onclick="startCamera()">📷 Kamera</button>
+
+<button onclick="searchWeb()">🌐 Internet</button>
+
+<button onclick="memory()">🧠 Pamięć</button>
+
+</div>
+
+</div>
+
+
+<script>
+
+function sendMessage(){
+
+let input=document.getElementById("msg");
+let chat=document.getElementById("chat");
+
+if(input.value=="") return;
+
+chat.innerHTML += 
+"<p>Ty: "+input.value+"</p>";
+
+chat.innerHTML +=
+"<p>Wariat AI: Zapisałem wiadomość. Moduł AI będzie podłączony w kolejnym etapie.</p>";
+
+input.value="";
+
+}
+
+
+function startVoice(){
+
+alert("Moduł głosu przygotujemy w kolejnym etapie.");
+
+}
+
+
+function startCamera(){
+
+alert("Moduł kamery przygotujemy w kolejnym etapie.");
+
+}
+
+
+function searchWeb(){
+
+alert("Wyszukiwanie internetu przygotujemy w kolejnym etapie.");
+
+}
+
+
+function memory(){
+
+alert("Pamięć AI przygotujemy w kolejnym etapie.");
+
+}
+
+</script>
+
+
+</body>
+</html>
