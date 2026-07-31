@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Wariat AI V3</title>
+<title>Wariat AI V4</title>
 
 <link rel="manifest" href="manifest.json">
 
@@ -13,74 +13,79 @@
 
 <style>
 
-body{
-margin:0;
-background:#111827;
-color:white;
-font-family:Arial;
-min-height:100vh;
-display:flex;
-align-items:center;
-justify-content:center;
+body {
+    margin:0;
+    background:#111827;
+    color:white;
+    font-family:Arial,sans-serif;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
 }
 
-.app{
-width:95%;
-max-width:500px;
-background:#1f2937;
-padding:20px;
-border-radius:20px;
-box-shadow:0 0 30px black;
+.app {
+    width:95%;
+    max-width:500px;
+    background:#1f2937;
+    padding:20px;
+    border-radius:20px;
+    box-shadow:0 0 30px black;
 }
 
-h1{
-text-align:center;
+h1 {
+    text-align:center;
 }
 
-.avatar{
-font-size:80px;
-text-align:center;
+.avatar {
+    text-align:center;
+    font-size:80px;
 }
 
-#chat{
-background:#111827;
-padding:10px;
-height:250px;
-overflow:auto;
-border-radius:15px;
-margin:20px 0;
+#chat {
+    background:#111827;
+    height:250px;
+    overflow:auto;
+    border-radius:15px;
+    padding:10px;
+    margin:20px 0;
 }
 
-input{
-width:65%;
-padding:12px;
-border-radius:10px;
-border:0;
+input {
+    width:65%;
+    padding:12px;
+    border-radius:10px;
+    border:0;
 }
 
-button{
-padding:14px;
-border:0;
-border-radius:15px;
-background:#2563eb;
-color:white;
-margin-top:10px;
+button {
+    padding:14px;
+    border:0;
+    border-radius:15px;
+    background:#2563eb;
+    color:white;
+    cursor:pointer;
 }
 
-.buttons{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:10px;
+.send {
+    width:25%;
 }
 
-video{
-width:100%;
-margin-top:15px;
-border-radius:15px;
+.buttons {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    margin-top:20px;
 }
 
-a{
-color:#60a5fa;
+video {
+    width:100%;
+    margin-top:15px;
+    border-radius:15px;
+}
+
+a {
+    color:#60a5fa;
 }
 
 </style>
@@ -94,7 +99,7 @@ color:#60a5fa;
 <div class="app">
 
 
-<h1>🤖 Wariat AI V3</h1>
+<h1>🤖 Wariat AI V4</h1>
 
 
 <div class="avatar">
@@ -104,28 +109,42 @@ color:#60a5fa;
 
 <div id="chat">
 
-<p>Wariat AI: Nowa wersja uruchomiona ✅</p>
+<p><b>Wariat AI:</b> Siema 👋 Jestem gotowy.</p>
 
 </div>
 
 
+
 <input id="msg" placeholder="Napisz pytanie">
 
-
-<button onclick="sendMessage()">
+<button class="send" onclick="sendMessage()">
 Wyślij
 </button>
 
 
+
 <div class="buttons">
 
-<button onclick="startVoice()">🎤 Głos</button>
 
-<button onclick="startCamera()">📷 Kamera</button>
+<button onclick="startVoice()">
+🎤 Głos
+</button>
 
-<button onclick="searchWeb()">🌐 Internet</button>
 
-<button onclick="memory()">🧠 Pamięć</button>
+<button onclick="startCamera()">
+📷 Kamera
+</button>
+
+
+<button onclick="searchWeb()">
+🌐 Internet
+</button>
+
+
+<button onclick="memory()">
+🧠 Pamięć
+</button>
+
 
 </div>
 
@@ -153,14 +172,25 @@ function sendMessage(){
 
 let input=document.getElementById("msg");
 
-if(input.value==="") return;
+let text=input.value.trim();
 
 
-addMessage("Ty: "+input.value);
+if(text==="") return;
 
 
 addMessage(
-"Wariat AI: Otrzymałem wiadomość. Moduł AI będzie kolejnym etapem."
+"<b>Ty:</b> "+text
+);
+
+
+localStorage.setItem(
+"ostatnie_pytanie",
+text
+);
+
+
+addMessage(
+"<b>Wariat AI:</b> Zapisałem pytanie. Moduł AI będzie kolejnym etapem."
 );
 
 
@@ -172,31 +202,34 @@ input.value="";
 
 
 
+
 function searchWeb(){
 
 let pytanie=prompt(
-"Czego mam poszukać?"
+"Wpisz czego mam poszukać:"
 );
 
 
-if(!pytanie)return;
+if(!pytanie) return;
 
 
 addMessage(
-"Wariat AI szuka: "+pytanie
+"🌐 Szukam: <b>"+pytanie+"</b>"
 );
 
 
-let tekst=encodeURIComponent(pytanie);
+let q=encodeURIComponent(pytanie);
+
 
 
 addMessage(
-"🔎 <a target='_blank' href='https://www.google.com/search?q="+tekst+"'>Wyniki</a>"
+"🔎 <a target='_blank' href='https://www.google.com/search?q="+q+"'>Wyniki wyszukiwania</a>"
 );
 
 
+
 addMessage(
-"📷 <a target='_blank' href='https://www.google.com/search?tbm=isch&q="+tekst+"'>Zdjęcia</a>"
+"📷 <a target='_blank' href='https://www.google.com/search?tbm=isch&q="+q+"'>Zdjęcia</a>"
 );
 
 
@@ -210,30 +243,40 @@ addMessage(
 let recognition;
 
 
+
 function startVoice(){
 
 
-if(!window.webkitSpeechRecognition){
+if(!("webkitSpeechRecognition" in window)){
 
-alert("Użyj Chrome na Androidzie");
+alert(
+"Uruchom aplikację w Chrome na Androidzie."
+);
 
 return;
 
 }
 
 
-recognition=new webkitSpeechRecognition();
+recognition =
+new webkitSpeechRecognition();
+
 
 recognition.lang="pl-PL";
 
 
 recognition.onresult=function(e){
 
-document.getElementById("msg").value =
+
+let text =
 e.results[0][0].transcript;
 
 
+document.getElementById("msg").value=text;
+
+
 sendMessage();
+
 
 };
 
@@ -248,22 +291,26 @@ recognition.start();
 
 
 
-
 function startCamera(){
 
 
 navigator.mediaDevices.getUserMedia({
+
 video:true
+
 })
 
-.then(stream=>{
+.then(function(stream){
 
 
 let video=document.createElement("video");
 
+
 video.srcObject=stream;
 
+
 video.autoplay=true;
+
 
 video.playsInline=true;
 
@@ -273,9 +320,11 @@ document.querySelector(".app").appendChild(video);
 
 })
 
-.catch(()=>{
+.catch(function(){
 
-alert("Brak dostępu do kamery");
+alert(
+"Brak dostępu do kamery."
+);
 
 });
 
@@ -287,16 +336,21 @@ alert("Brak dostępu do kamery");
 
 
 
+
 function memory(){
 
 
-let data=localStorage.getItem("ostatnie");
+let data=
+localStorage.getItem(
+"ostatnie_pytanie"
+);
+
 
 
 if(data){
 
 addMessage(
-"🧠 Pamiętam: "+data
+"🧠 Pamiętam ostatnie pytanie: "+data
 );
 
 }
@@ -304,7 +358,7 @@ addMessage(
 else{
 
 addMessage(
-"🧠 Brak zapisanej pamięci"
+"🧠 Jeszcze nic nie zapamiętałem."
 );
 
 }
@@ -319,7 +373,9 @@ addMessage(
 
 if("serviceWorker" in navigator){
 
-navigator.serviceWorker.register("sw.js?v=3");
+navigator.serviceWorker.register(
+"sw.js?v=4"
+);
 
 }
 
@@ -328,5 +384,4 @@ navigator.serviceWorker.register("sw.js?v=3");
 
 
 </body>
-
 </html>
