@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Wariat AI V4</title>
+<title>Wariat AI V5</title>
 
 <link rel="manifest" href="manifest.json">
 
@@ -13,79 +13,84 @@
 
 <style>
 
-body {
-    margin:0;
-    background:#111827;
-    color:white;
-    font-family:Arial,sans-serif;
-    min-height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
+body{
+margin:0;
+background:#111827;
+color:white;
+font-family:Arial,sans-serif;
+display:flex;
+justify-content:center;
+align-items:center;
+min-height:100vh;
 }
 
-.app {
-    width:95%;
-    max-width:500px;
-    background:#1f2937;
-    padding:20px;
-    border-radius:20px;
-    box-shadow:0 0 30px black;
+.app{
+width:95%;
+max-width:500px;
+background:#1f2937;
+padding:20px;
+border-radius:20px;
+box-shadow:0 0 30px black;
 }
 
-h1 {
-    text-align:center;
+h1{
+text-align:center;
 }
 
-.avatar {
-    text-align:center;
-    font-size:80px;
+.avatar{
+font-size:80px;
+text-align:center;
 }
 
-#chat {
-    background:#111827;
-    height:250px;
-    overflow:auto;
-    border-radius:15px;
-    padding:10px;
-    margin:20px 0;
+#chat{
+height:300px;
+overflow:auto;
+background:#111827;
+padding:10px;
+border-radius:15px;
+margin:20px 0;
 }
 
-input {
-    width:65%;
-    padding:12px;
-    border-radius:10px;
-    border:0;
+.msg{
+padding:8px;
+margin:5px 0;
+border-radius:10px;
 }
 
-button {
-    padding:14px;
-    border:0;
-    border-radius:15px;
-    background:#2563eb;
-    color:white;
-    cursor:pointer;
+.user{
+background:#2563eb;
 }
 
-.send {
-    width:25%;
+.ai{
+background:#374151;
 }
 
-.buttons {
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:10px;
-    margin-top:20px;
+input{
+width:65%;
+padding:12px;
+border-radius:10px;
+border:none;
 }
 
-video {
-    width:100%;
-    margin-top:15px;
-    border-radius:15px;
+button{
+padding:13px;
+border:0;
+border-radius:15px;
+background:#2563eb;
+color:white;
+margin-top:10px;
 }
 
-a {
-    color:#60a5fa;
+.buttons{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px;
+}
+
+video{
+width:100%;
+margin-top:15px;
+border-radius:15px;
 }
 
 </style>
@@ -99,7 +104,7 @@ a {
 <div class="app">
 
 
-<h1>🤖 Wariat AI V4</h1>
+<h1>🤖 Wariat AI V5</h1>
 
 
 <div class="avatar">
@@ -107,17 +112,12 @@ a {
 </div>
 
 
-<div id="chat">
-
-<p><b>Wariat AI:</b> Siema 👋 Jestem gotowy.</p>
-
-</div>
+<div id="chat"></div>
 
 
+<input id="msg" placeholder="Napisz do mnie...">
 
-<input id="msg" placeholder="Napisz pytanie">
-
-<button class="send" onclick="sendMessage()">
+<button onclick="sendMessage()">
 Wyślij
 </button>
 
@@ -141,8 +141,8 @@ Wyślij
 </button>
 
 
-<button onclick="memory()">
-🧠 Pamięć
+<button onclick="clearMemory()">
+🧹 Wyczyść
 </button>
 
 
@@ -156,15 +156,26 @@ Wyślij
 <script>
 
 
-function addMessage(text){
-
 let chat=document.getElementById("chat");
 
-chat.innerHTML += "<p>"+text+"</p>";
+
+
+function addMessage(text,type){
+
+let div=document.createElement("div");
+
+div.className="msg "+type;
+
+div.innerHTML=text;
+
+chat.appendChild(div);
 
 chat.scrollTop=chat.scrollHeight;
 
+saveChat();
+
 }
+
 
 
 
@@ -175,22 +186,24 @@ let input=document.getElementById("msg");
 let text=input.value.trim();
 
 
-if(text==="") return;
+if(!text)return;
 
 
 addMessage(
-"<b>Ty:</b> "+text
+"Ty: "+text,
+"user"
 );
 
 
-localStorage.setItem(
-"ostatnie_pytanie",
-text
-);
+let answer =
+"Zapisałem: "+text+
+"<br><br>Jestem gotowy do podłączenia prawdziwego AI.";
+
 
 
 addMessage(
-"<b>Wariat AI:</b> Zapisałem pytanie. Moduł AI będzie kolejnym etapem."
+"Wariat AI: "+answer,
+"ai"
 );
 
 
@@ -203,37 +216,39 @@ input.value="";
 
 
 
+
 function searchWeb(){
 
-let pytanie=prompt(
-"Wpisz czego mam poszukać:"
+
+let q=prompt(
+"Czego mam poszukać?"
 );
 
 
-if(!pytanie) return;
+if(!q)return;
 
 
 addMessage(
-"🌐 Szukam: <b>"+pytanie+"</b>"
-);
-
-
-let q=encodeURIComponent(pytanie);
-
-
-
-addMessage(
-"🔎 <a target='_blank' href='https://www.google.com/search?q="+q+"'>Wyniki wyszukiwania</a>"
+"Wariat AI szuka informacji o: "+q,
+"ai"
 );
 
 
 
+let link=
+"https://www.google.com/search?q="
++encodeURIComponent(q);
+
+
+
 addMessage(
-"📷 <a target='_blank' href='https://www.google.com/search?tbm=isch&q="+q+"'>Zdjęcia</a>"
+"<a target='_blank' href='"+link+"'>🔎 Wyniki wyszukiwania</a>",
+"ai"
 );
 
 
 }
+
 
 
 
@@ -249,18 +264,14 @@ function startVoice(){
 
 if(!("webkitSpeechRecognition" in window)){
 
-alert(
-"Uruchom aplikację w Chrome na Androidzie."
-);
+alert("Otwórz w Chrome Android");
 
 return;
 
 }
 
 
-recognition =
-new webkitSpeechRecognition();
-
+recognition=new webkitSpeechRecognition();
 
 recognition.lang="pl-PL";
 
@@ -268,11 +279,8 @@ recognition.lang="pl-PL";
 recognition.onresult=function(e){
 
 
-let text =
+document.getElementById("msg").value=
 e.results[0][0].transcript;
-
-
-document.getElementById("msg").value=text;
 
 
 sendMessage();
@@ -300,31 +308,20 @@ video:true
 
 })
 
-.then(function(stream){
+.then(stream=>{
 
 
 let video=document.createElement("video");
 
-
 video.srcObject=stream;
 
-
 video.autoplay=true;
-
 
 video.playsInline=true;
 
 
 document.querySelector(".app").appendChild(video);
 
-
-})
-
-.catch(function(){
-
-alert(
-"Brak dostępu do kamery."
-);
 
 });
 
@@ -336,29 +333,37 @@ alert(
 
 
 
+function saveChat(){
 
-function memory(){
+localStorage.setItem(
+"wariat_chat",
+chat.innerHTML
+);
+
+}
 
 
-let data=
+
+
+function loadChat(){
+
+let old=
 localStorage.getItem(
-"ostatnie_pytanie"
+"wariat_chat"
 );
 
 
+if(old){
 
-if(data){
-
-addMessage(
-"🧠 Pamiętam ostatnie pytanie: "+data
-);
+chat.innerHTML=old;
 
 }
 
 else{
 
 addMessage(
-"🧠 Jeszcze nic nie zapamiętałem."
+"Wariat AI: Siema 👋 Jestem gotowy.",
+"ai"
 );
 
 }
@@ -366,6 +371,28 @@ addMessage(
 
 }
 
+
+
+function clearMemory(){
+
+localStorage.removeItem(
+"wariat_chat"
+);
+
+
+chat.innerHTML="";
+
+
+addMessage(
+"Wariat AI: Pamięć wyczyszczona.",
+"ai"
+);
+
+}
+
+
+
+loadChat();
 
 
 
@@ -374,10 +401,11 @@ addMessage(
 if("serviceWorker" in navigator){
 
 navigator.serviceWorker.register(
-"sw.js?v=4"
+"sw.js?v=5"
 );
 
 }
+
 
 
 </script>
