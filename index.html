@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Wariat AI V7</title>
+<title>Wariat AI V8</title>
 
 <link rel="manifest" href="manifest.json">
 
@@ -42,7 +43,7 @@ text-align:center;
 }
 
 #chat{
-height:280px;
+height:300px;
 overflow:auto;
 background:#111827;
 padding:10px;
@@ -50,9 +51,9 @@ border-radius:15px;
 }
 
 .msg{
-padding:8px;
-margin:6px 0;
-border-radius:10px;
+padding:10px;
+margin:8px 0;
+border-radius:12px;
 }
 
 .user{
@@ -72,11 +73,11 @@ border:0;
 
 button{
 padding:12px;
-margin-top:10px;
 border:0;
 border-radius:15px;
 background:#2563eb;
 color:white;
+margin-top:10px;
 }
 
 .buttons{
@@ -95,6 +96,13 @@ canvas{
 display:none;
 }
 
+.install{
+display:none;
+background:#16a34a;
+width:100%;
+}
+
+
 </style>
 
 </head>
@@ -106,7 +114,7 @@ display:none;
 <div class="app">
 
 
-<h1>🤖 Wariat AI V7</h1>
+<h1>🤖 Wariat AI V8</h1>
 
 
 <div class="avatar">
@@ -125,28 +133,50 @@ Wyślij
 </button>
 
 
+<button class="install" id="installBtn">
+📲 Zainstaluj Wariat AI
+</button>
+
+
+
 <div class="buttons">
 
-<button onclick="startVoice()">🎤 Głos</button>
 
-<button onclick="startCamera()">📷 Kamera LIVE</button>
+<button onclick="startVoice()">
+🎤 Głos
+</button>
 
-<button onclick="takeView()">👁️ Zobacz</button>
 
-<button onclick="stopCamera()">⛔ Stop</button>
+<button onclick="startCamera()">
+📷 Kamera LIVE
+</button>
 
-<button onclick="clearMemory()">🧹 Pamięć</button>
+
+<button onclick="takeView()">
+👁️ Zobacz
+</button>
+
+
+<button onclick="stopCamera()">
+⛔ Stop
+</button>
+
+
+<button onclick="clearMemory()">
+🧹 Pamięć
+</button>
+
 
 </div>
 
 
 <div id="camera"></div>
 
+
 <canvas id="canvas"></canvas>
 
 
 </div>
-
 
 
 <script>
@@ -158,301 +188,33 @@ let stream=null;
 
 let video=null;
 
+let installPrompt=null;
 
 
 
-function addMessage(text,type){
+window.addEventListener(
+"beforeinstallprompt",
+(e)=>{
 
-let div=document.createElement("div");
+e.preventDefault();
 
-div.className="msg "+type;
+installPrompt=e;
 
-div.innerHTML=text;
-
-chat.appendChild(div);
-
-chat.scrollTop=chat.scrollHeight;
-
-saveMemory();
-
-}
-
-
-
-
-function sendMessage(){
-
-let input=document.getElementById("msg");
-
-let text=input.value.trim();
-
-
-if(!text)return;
-
-
-addMessage(
-"Ty: "+text,
-"user"
-);
-
-
-
-addMessage(
-"Wariat AI: Odebrałem wiadomość. Moduł rozmowy działa.",
-"ai"
-);
-
-
-input.value="";
-
-}
-
-
-
-
-function startVoice(){
-
-
-if(!("webkitSpeechRecognition" in window)){
-
-alert("Brak obsługi głosu");
-
-return;
-
-}
-
-
-let rec=new webkitSpeechRecognition();
-
-
-rec.lang="pl-PL";
-
-
-rec.onresult=function(e){
-
-document.getElementById("msg").value=
-e.results[0][0].transcript;
-
-
-sendMessage();
-
-};
-
-
-rec.start();
-
-
-}
-
-
-
-
-
-async function startCamera(){
-
-
-try{
-
-
-stream=await navigator.mediaDevices.getUserMedia({
-
-video:true
+document.getElementById("installBtn").style.display="block";
 
 });
 
 
-video=document.createElement("video");
+document.getElementById("installBtn")
+.onclick=async()=>{
 
+if(installPrompt){
 
-video.srcObject=stream;
+installPrompt.prompt();
 
-video.autoplay=true;
-
-video.playsInline=true;
-
-
-document.getElementById("camera").innerHTML="";
-
-
-document.getElementById("camera").appendChild(video);
-
-
-addMessage(
-"Wariat AI: Kamera LIVE uruchomiona 📷",
-"ai"
-);
-
+installPrompt=null;
 
 }
 
-catch(e){
+};
 
-addMessage(
-"Wariat AI: Nie mogę uruchomić kamery.",
-"ai"
-);
-
-}
-
-
-}
-
-
-
-
-
-function stopCamera(){
-
-
-if(stream){
-
-stream.getTracks().forEach(
-t=>t.stop()
-);
-
-
-stream=null;
-
-
-document.getElementById("camera").innerHTML="";
-
-
-addMessage(
-"Wariat AI: Kamera wyłączona.",
-"ai"
-);
-
-}
-
-
-}
-
-
-
-
-
-function takeView(){
-
-
-if(!video){
-
-addMessage(
-"Wariat AI: Najpierw uruchom kamerę.",
-"ai"
-);
-
-return;
-
-}
-
-
-
-let canvas=document.getElementById("canvas");
-
-
-canvas.width=video.videoWidth;
-
-canvas.height=video.videoHeight;
-
-
-let ctx=canvas.getContext("2d");
-
-
-ctx.drawImage(
-video,
-0,
-0
-);
-
-
-
-addMessage(
-"Wariat AI: Obraz pobrany. Gotowy do analizy AI.",
-"ai"
-);
-
-
-
-}
-
-
-
-
-function saveMemory(){
-
-localStorage.setItem(
-"wariat_v7",
-chat.innerHTML
-);
-
-}
-
-
-
-
-function loadMemory(){
-
-let old=
-localStorage.getItem("wariat_v7");
-
-
-if(old){
-
-chat.innerHTML=old;
-
-}
-
-else{
-
-addMessage(
-"Wariat AI: Siema 👋 Jestem gotowy.",
-"ai"
-);
-
-}
-
-
-}
-
-
-
-
-function clearMemory(){
-
-localStorage.removeItem(
-"wariat_v7"
-);
-
-
-chat.innerHTML="";
-
-
-addMessage(
-"Wariat AI: Pamięć wyczyszczona.",
-"ai"
-);
-
-
-}
-
-
-
-
-loadMemory();
-
-
-
-if("serviceWorker" in navigator){
-
-navigator.serviceWorker.register(
-"sw.js?v=7"
-);
-
-}
-
-
-</script>
-
-
-</body>
-</html>
