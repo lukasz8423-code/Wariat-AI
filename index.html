@@ -765,11 +765,9 @@ input.value="";
 
 function startVoice(){
 
-
-let SR=
+let SR =
 window.SpeechRecognition ||
 window.webkitSpeechRecognition;
-
 
 
 if(!SR){
@@ -781,39 +779,27 @@ return;
 }
 
 
-
-let rec=new SR();
-
+let rec = new SR();
 
 
 rec.lang="pl-PL";
 
 
-
 rec.start();
-
-
 
 
 rec.onresult=function(e){
 
-
-document.getElementById("msg").value=
+document.getElementById("msg").value =
 e.results[0][0].transcript;
-
 
 
 sendMessage();
 
-
-
 };
 
 
-
 }
-
-
 
 
 
@@ -830,7 +816,7 @@ async function startCamera(){
 try{
 
 
-stream=
+stream =
 await navigator.mediaDevices.getUserMedia({
 
 video:{
@@ -877,16 +863,16 @@ catch(e){
 
 
 addMessage(
-"❌ Kamera niedostępna.",
+"❌ Kamera niedostępna: "+e.message,
 "ai"
 );
 
 
-
 }
 
 
 }
+
 
 
 
@@ -913,24 +899,34 @@ return;
 
 
 
-let canvas=document.createElement("canvas");
-
-
-canvas.width=video.videoWidth;
-
-
-canvas.height=video.videoHeight;
+let canvas =
+document.createElement("canvas");
 
 
 
-let ctx=canvas.getContext("2d");
+canvas.width =
+video.videoWidth;
 
 
-ctx.drawImage(video,0,0);
+canvas.height =
+video.videoHeight;
 
 
 
-let img=
+let ctx =
+canvas.getContext("2d");
+
+
+
+ctx.drawImage(
+video,
+0,
+0
+);
+
+
+
+let img =
 canvas.toDataURL(
 "image/jpeg",
 0.8
@@ -938,7 +934,7 @@ canvas.toDataURL(
 
 
 
-document.getElementById("photo").innerHTML=
+document.getElementById("photo").innerHTML =
 "<img src='"+img+"'>";
 
 
@@ -951,6 +947,7 @@ addMessage(
 
 
 }
+
 
 
 
@@ -980,7 +977,6 @@ video=null;
 document.getElementById("camera").innerHTML="";
 
 
-
 addMessage(
 "⛔ Kamera wyłączona.",
 "ai"
@@ -1000,13 +996,19 @@ addMessage(
 function showMemory(){
 
 
+let result =
+aiBrain("co pamiętasz");
+
+
 addMessage(
-"🧠 "+aiBrain("co pamiętasz"),
+"🧠 "+result,
 "ai"
 );
 
 
+
 }
+
 
 
 
@@ -1031,7 +1033,7 @@ saveMemory();
 
 
 addMessage(
-"🗑️ Pamięć wyczyszczona.",
+"🗑️ Pamięć została wyczyszczona.",
 "ai"
 );
 
@@ -1061,7 +1063,6 @@ addMessage(
 );
 
 
-
 }else{
 
 
@@ -1071,9 +1072,20 @@ addMessage(
 );
 
 
-
 }
 
 
 
 };
+
+
+
+
+
+</script>
+
+
+</body>
+
+
+</html>
