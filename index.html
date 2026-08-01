@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Wariat AI V10.2</title>
+<title>Wariat AI V11.0</title>
 
 <meta name="theme-color" content="#2563eb">
 
@@ -41,44 +41,63 @@ font-size:80px;
 text-align:center;
 }
 
-.status{
+.mode{
+
 background:#111827;
-padding:10px;
+padding:12px;
 border-radius:15px;
 margin-bottom:10px;
+text-align:center;
+
 }
 
 #chat{
+
 height:300px;
 overflow:auto;
 background:#111827;
 padding:10px;
 border-radius:15px;
+
 }
 
+
 .msg{
+
 padding:10px;
 margin:8px 0;
 border-radius:12px;
+
 }
+
 
 .user{
+
 background:#2563eb;
+
 }
+
 
 .ai{
+
 background:#374151;
+
 }
 
+
 input{
+
 width:90%;
 padding:12px;
 border-radius:10px;
 border:0;
 margin-top:10px;
+
 }
 
+
 button{
+
 width:100%;
 padding:12px;
 margin-top:10px;
@@ -87,18 +106,25 @@ border-radius:15px;
 background:#2563eb;
 color:white;
 font-size:16px;
+
 }
 
+
 .buttons{
+
 display:grid;
 grid-template-columns:1fr 1fr;
 gap:10px;
+
 }
 
+
 video,img{
+
 width:100%;
 border-radius:15px;
 margin-top:15px;
+
 }
 
 </style>
@@ -112,7 +138,7 @@ margin-top:15px;
 <div class="app">
 
 
-<h1>🤖 Wariat AI V10.2</h1>
+<h1>🤖 Wariat AI V11.0</h1>
 
 
 <div class="avatar">
@@ -120,11 +146,19 @@ margin-top:15px;
 </div>
 
 
-<div class="status" id="status">
+<div class="mode" id="mode">
 
-🧠 Wariat działa offline
+🟢 Tryb OFFLINE
 
 </div>
+
+
+<button onclick="switchMode()">
+
+Zmień tryb
+
+</button>
+
 
 
 <div id="chat"></div>
@@ -134,7 +168,9 @@ margin-top:15px;
 
 
 <button onclick="sendMessage()">
+
 Wyślij
+
 </button>
 
 
@@ -193,8 +229,11 @@ let stream=null;
 let video=null;
 
 
+let aiMode=false;
 
-let memory=
+
+
+let memory =
 JSON.parse(
 localStorage.getItem("wariat_memory")
 )
@@ -215,8 +254,6 @@ JSON.stringify(memory)
 );
 
 }
-
-
 
 
 
@@ -247,13 +284,15 @@ chat.scrollTop=chat.scrollHeight;
 function speak(text){
 
 
-let speech=
+let speech =
 new SpeechSynthesisUtterance(text);
 
 
 speech.lang="pl-PL";
 
+
 speech.rate=0.95;
+
 
 speech.pitch=1;
 
@@ -267,32 +306,40 @@ speechSynthesis.speak(speech);
 
 
 
-function getTimeText(){
+function switchMode(){
 
+
+aiMode=!aiMode;
+
+
+document.getElementById("mode").innerHTML =
+aiMode
+?
+"🔵 Tryb AI (oczekuje połączenia)"
+:
+"🟢 Tryb OFFLINE";
+
+
+addMessage(
+aiMode
+?
+"Tryb AI włączony. Czekam na silnik AI."
+:
+"Tryb offline aktywny."
+,
+"ai"
+);
+
+
+}
+
+function getTime(){
 
 let now=new Date();
 
-
-let hour=now.getHours();
-
-
-
-if(hour>=5 && hour<12){
-
-return "Dzień dobry";
-
-}
-
-
-if(hour>=12 && hour<18){
-
-return "Dzień dobry";
-
-}
-
-
-return "Dobry wieczór";
-
+return "Jest teraz godzina "+
+now.getHours()+":"+
+String(now.getMinutes()).padStart(2,"0")+".";
 
 }
 
@@ -301,7 +348,6 @@ return "Dobry wieczór";
 
 
 function think(text){
-
 
 let t=text.toLowerCase().trim();
 
@@ -312,59 +358,53 @@ t.includes("mam na imię") ||
 t.includes("mam na imie")
 ){
 
-
 let name=text
 .replace(/mam na imię/i,"")
 .replace(/mam na imie/i,"")
 .trim();
 
 
-
-memory.name=
+memory.name =
 name.charAt(0).toUpperCase()
 +
 name.slice(1);
 
 
-
 saveMemory();
-
 
 
 return "Zapamiętałem. Od teraz będę mówił do Ciebie "+memory.name+".";
 
 }
 
+
+
+
 if(
 t.includes("jak mam na imię") ||
 t.includes("jak mam na imie")
 ){
 
-if(memory.name){
 
-return "Masz na imię "+memory.name+".";
+return memory.name
+?
+"Masz na imię "+memory.name+"."
+:
+"Jeszcze nie znam Twojego imienia.";
 
 }
 
-return "Jeszcze nie znam Twojego imienia.";
-
-}
 
 
 
 
-
-if(
-t.startsWith("zapamiętaj") ||
-t.startsWith("zapamietaj")
-){
+if(t.startsWith("zapamiętaj") || t.startsWith("zapamietaj")){
 
 
 let info=text
 .replace(/zapamiętaj/i,"")
 .replace(/zapamietaj/i,"")
 .trim();
-
 
 
 if(info){
@@ -379,8 +419,6 @@ return "Zapamiętałem: "+info;
 }
 
 
-return "Powiedz co mam zapamiętać.";
-
 }
 
 
@@ -391,33 +429,26 @@ t.includes("co pamiętasz") ||
 t.includes("co pamietasz")
 ){
 
-let answer="";
+
+let r="";
 
 
 if(memory.name){
 
-answer+="Twoje imię to "+memory.name+". ";
+r+="Twoje imię to "+memory.name+". ";
 
 }
 
 
 if(memory.facts.length){
 
-answer+="Pamiętam: "+
+r+="Pamiętam: "+
 memory.facts.join(", ")+". ";
 
 }
 
 
-
-if(answer===""){
-
-answer="Moja pamięć jest pusta.";
-
-}
-
-
-return answer;
+return r || "Moja pamięć jest pusta.";
 
 }
 
@@ -425,14 +456,12 @@ return answer;
 
 
 
-if(t.includes("która godzina") || t.includes("jaka godzina")){
+if(
+t.includes("godzina") ||
+t.includes("czas")
+){
 
-
-let now=new Date();
-
-
-return "Jest teraz godzina "+
-now.getHours()+":"+String(now.getMinutes()).padStart(2,"0")+".";
+return getTime();
 
 }
 
@@ -440,14 +469,15 @@ now.getHours()+":"+String(now.getMinutes()).padStart(2,"0")+".";
 
 
 
-if(t.includes("jaki dzień") || t.includes("jaka data")){
-
-
-let now=new Date();
+if(
+t.includes("data") ||
+t.includes("dzień")
+){
 
 
 return "Dzisiaj jest "+
-now.toLocaleDateString("pl-PL")+".";
+new Date().toLocaleDateString("pl-PL")+".";
+
 }
 
 
@@ -461,48 +491,29 @@ t.includes("hej") ||
 t.includes("siema")
 ){
 
-
-return getTimeText()+
-" 😎 Jestem Wariat AI. Co robimy?";
-
+return "Siema 😎 Jestem Wariat AI V11. Działamy.";
 
 }
 
-
-
-
-
-if(t.includes("co tam u ciebie")){
-
-
-return "Działam 😎 Nie mam kawy, ale mam procesor. Rozwijamy dalej Wariata.";
-
-
-}
-
-
-
-
-if(t.includes("kim jesteś")){
-
-
-return "Jestem Wariat AI V10.2. Twoim pomocnikiem w telefonie.";
-
-
-}
 
 
 
 
 if(
-t.includes("dzięki") ||
-t.includes("dzieki") ||
-t.includes("dziękuję") ||
-t.includes("dziekuje")
+t.includes("kim jesteś")
 ){
 
-return "Nie ma sprawy 😎";
+return "Jestem Wariat AI V11. Mam tryb offline i przygotowanie pod prawdziwe AI.";
 
+}
+
+
+
+
+
+if(aiMode){
+
+return "Tryb AI jest przygotowany, ale silnik AI nie jest jeszcze podłączony.";
 
 }
 
@@ -511,13 +522,13 @@ return "Nie ma sprawy 😎";
 
 let answers=[
 
-"Słucham 😎",
+"Rozumiem 😎",
+
+"Słucham.",
 
 "Jestem tutaj.",
 
-"Działamy dalej.",
-
-"Rozumiem. Mów co robimy."
+"Możemy działać dalej."
 
 ];
 
@@ -528,7 +539,6 @@ Math.floor(Math.random()*answers.length)
 
 
 }
-
 
 
 
@@ -548,7 +558,10 @@ if(!text)return;
 
 
 
-addMessage(text,"user");
+addMessage(
+text,
+"user"
+);
 
 
 
@@ -556,7 +569,11 @@ let answer=think(text);
 
 
 
-addMessage(answer,"ai");
+addMessage(
+answer,
+"ai"
+);
+
 
 
 speak(answer);
@@ -573,17 +590,16 @@ input.value="";
 
 
 
-
 function startVoice(){
 
 
-let Recognition =
+let SR=
 window.SpeechRecognition ||
 window.webkitSpeechRecognition;
 
 
 
-if(!Recognition){
+if(!SR){
 
 alert("Brak obsługi głosu");
 
@@ -593,7 +609,7 @@ return;
 
 
 
-let rec=new Recognition();
+let rec=new SR();
 
 
 rec.lang="pl-PL";
@@ -624,14 +640,13 @@ sendMessage();
 
 
 
-
 async function startCamera(){
 
 
 try{
 
 
-stream =
+stream=
 await navigator.mediaDevices.getUserMedia({
 
 video:{
@@ -676,7 +691,7 @@ catch(e){
 
 
 addMessage(
-"❌ Nie udało się uruchomić kamery.",
+"❌ Kamera nie działa.",
 "ai"
 );
 
@@ -697,7 +712,7 @@ function takeView(){
 if(!video){
 
 addMessage(
-"Najpierw włącz kamerę.",
+"Najpierw uruchom kamerę.",
 "ai"
 );
 
@@ -707,12 +722,10 @@ return;
 
 
 
-
 let canvas=document.createElement("canvas");
 
 
 canvas.width=video.videoWidth;
-
 
 canvas.height=video.videoHeight;
 
@@ -738,13 +751,13 @@ document.getElementById("photo").innerHTML=
 
 
 addMessage(
-"👁️ Zdjęcie wykonane. W przyszłości dodamy pełne widzenie AI.",
+"👁️ Zdjęcie wykonane. Moduł widzenia AI czeka na podłączenie.",
 "ai"
 );
 
 
-
 }
+
 
 
 
@@ -763,7 +776,6 @@ t=>t.stop()
 }
 
 
-
 stream=null;
 
 video=null;
@@ -773,7 +785,7 @@ document.getElementById("camera").innerHTML="";
 
 
 addMessage(
-"⛔ Kamera wyłączona.",
+"⛔ Kamera zatrzymana.",
 "ai"
 );
 
@@ -803,12 +815,9 @@ function clearMemory(){
 
 
 memory={
-
 name:"",
 facts:[]
-
 };
-
 
 
 saveMemory();
@@ -826,31 +835,18 @@ addMessage(
 
 
 
+
 window.onload=function(){
 
 
-if(memory.name){
-
-
 addMessage(
-"Witaj ponownie "+memory.name+" 😎",
+"😎 Wariat AI V11 gotowy.",
 "ai"
 );
-
-
-}else{
-
-
-addMessage(
-getTimeText()+" 😎 Jestem Wariat AI V10.2.",
-"ai"
-);
-
-
-}
 
 
 };
+
 
 
 
