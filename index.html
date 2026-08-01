@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Wariat AI V11.2</title>
+<title>Wariat AI V12.0</title>
 
 <meta name="theme-color" content="#2563eb">
 
@@ -37,11 +37,13 @@ box-shadow:0 0 30px black;
 }
 
 
+
 h1{
 
 text-align:center;
 
 }
+
 
 
 .avatar{
@@ -53,14 +55,17 @@ text-align:center;
 
 
 
-.mode{
+
+.status{
 
 background:#111827;
 padding:12px;
 border-radius:15px;
 text-align:center;
+margin-bottom:10px;
 
 }
+
 
 
 
@@ -71,9 +76,9 @@ overflow:auto;
 background:#111827;
 padding:10px;
 border-radius:15px;
-margin-top:10px;
 
 }
+
 
 
 
@@ -103,15 +108,17 @@ background:#374151;
 
 
 
+
 input{
 
 width:90%;
 padding:12px;
-margin-top:10px;
 border-radius:10px;
 border:0;
+margin-top:10px;
 
 }
+
 
 
 
@@ -127,6 +134,7 @@ color:white;
 font-size:16px;
 
 }
+
 
 
 
@@ -158,10 +166,12 @@ margin-top:15px;
 <body>
 
 
+
 <div class="app">
 
 
-<h1>🤖 Wariat AI V11.2</h1>
+<h1>🤖 Wariat AI V12.0</h1>
+
 
 
 <div class="avatar">
@@ -170,9 +180,9 @@ margin-top:15px;
 
 
 
-<div class="mode">
+<div class="status">
 
-🟢 Tryb OFFLINE | 🧠 Pamięć aktywna
+🧠 Nowy mózg AI | Pamięć aktywna
 
 </div>
 
@@ -180,6 +190,7 @@ margin-top:15px;
 
 
 <div id="chat"></div>
+
 
 
 
@@ -192,7 +203,6 @@ margin-top:15px;
 Wyślij
 
 </button>
-
 
 
 
@@ -225,8 +235,9 @@ Wyślij
 
 
 <button onclick="clearMemory()">
-🗑️ Wyczyść
+🗑️ Reset pamięci
 </button>
+
 
 
 </div>
@@ -243,29 +254,30 @@ Wyślij
 <script>
 
 
-let chat =
-document.getElementById("chat");
 
+let chat=document.getElementById("chat");
 
 
 let stream=null;
+
 
 let video=null;
 
 
 
-
-// =====================
-// PAMIĘĆ WARIATA
-// =====================
+// ============================
+// PAMIĘĆ WARIAT AI
+// ============================
 
 
 let memory={
 
 name:"",
-facts:[]
+facts:[],
+history:[]
 
 };
+
 
 
 
@@ -273,8 +285,8 @@ facts:[]
 function loadMemory(){
 
 
-let saved =
-localStorage.getItem("wariat_memory");
+let saved=
+localStorage.getItem("wariat_v12_memory");
 
 
 
@@ -283,26 +295,30 @@ if(saved){
 
 try{
 
+
 memory=JSON.parse(saved);
 
 
 }
 
+
 catch(e){
+
 
 memory={
 name:"",
-facts:[]
+facts:[],
+history:[]
 };
 
-}
-
 
 }
 
 
 }
 
+
+}
 
 
 
@@ -311,12 +327,14 @@ function saveMemory(){
 
 
 localStorage.setItem(
-"wariat_memory",
+"wariat_v12_memory",
 JSON.stringify(memory)
 );
 
 
 }
+
+
 
 
 
@@ -337,11 +355,12 @@ div.innerText=text;
 chat.appendChild(div);
 
 
-chat.scrollTop=
-chat.scrollHeight;
+chat.scrollTop=chat.scrollHeight;
+
 
 
 }
+
 
 
 
@@ -349,36 +368,48 @@ chat.scrollHeight;
 function speak(text){
 
 
-let speech=
+let s=
 new SpeechSynthesisUtterance(text);
 
 
-speech.lang="pl-PL";
+s.lang="pl-PL";
 
 
-speech.rate=0.95;
+s.rate=0.95;
 
 
-speech.pitch=1;
+speechSynthesis.speak(s);
 
-
-speechSynthesis.speak(speech);
 
 
 }
 
-function think(text){
-
-let t=text.toLowerCase().trim();
 
 
 
-// IMIĘ
+
+// ============================
+// NOWY MÓZG WARIAT AI V12
+// ============================
+
+
+function aiBrain(text){
+
+
+let q=text.toLowerCase().trim();
+
+
+
+// PAMIĘĆ IMIENIA
+
 
 if(
-t.includes("mam na imię") ||
-t.includes("mam na imie")
+(q.includes("mam na imię") ||
+q.includes("mam na imie"))
+&&
+!q.includes("jak mam")
 ){
+
 
 let name=text
 .replace(/mam na imię/i,"")
@@ -386,13 +417,16 @@ let name=text
 .trim();
 
 
-memory.name =
+
+memory.name=
 name.charAt(0).toUpperCase()
 +
 name.slice(1);
 
 
+
 saveMemory();
+
 
 
 return "Zapamiętałem. Od teraz będę mówił do Ciebie "+memory.name+".";
@@ -402,16 +436,18 @@ return "Zapamiętałem. Od teraz będę mówił do Ciebie "+memory.name+".";
 
 
 
+
 if(
-t.includes("jak mam na imię") ||
-t.includes("jak mam na imie")
+q.includes("jak mam na imię") ||
+q.includes("jak mam na imie")
 ){
+
 
 return memory.name
 ?
 "Masz na imię "+memory.name+"."
 :
-"Jeszcze nie znam Twojego imienia.";
+"Nie znam jeszcze Twojego imienia.";
 
 }
 
@@ -419,62 +455,74 @@ return memory.name
 
 
 
-// ZAPIS INFORMACJI
+// ZAPIS FAKTÓW
+
 
 if(
-t.startsWith("zapamiętaj") ||
-t.startsWith("zapamietaj")
+q.startsWith("zapamiętaj") ||
+q.startsWith("zapamietaj")
 ){
 
-let info=text
+
+let fact=text
 .replace(/zapamiętaj/i,"")
 .replace(/zapamietaj/i,"")
+.replace(/^że\s+/i,"")
 .trim();
 
 
-if(info){
 
-memory.facts.push(info);
+if(fact){
+
+
+memory.facts.push(fact);
+
 
 saveMemory();
 
 
-return "Zapamiętałem: "+info;
+return "Zapamiętałem: "+fact+".";
 
 }
 
+
+
 }
 
 
 
 
 
-// PAMIĘĆ
+// ODCZYT PAMIĘCI
+
 
 if(
-t.includes("co pamiętasz") ||
-t.includes("co pamietasz")
+q.includes("co pamiętasz") ||
+q.includes("co pamietasz")
 ){
 
-let answer="";
+
+let r="";
 
 
 if(memory.name){
 
-answer+="Masz na imię "+memory.name+". ";
+r+="Masz na imię "+memory.name+". ";
 
 }
 
 
+
 if(memory.facts.length){
 
-answer+="Zapamiętałem: "+
+r+="Pamiętam: "+
 memory.facts.join(", ")+". ";
 
 }
 
 
-return answer || "Moja pamięć jest pusta.";
+
+return r || "Moja pamięć jest pusta.";
 
 }
 
@@ -483,24 +531,28 @@ return answer || "Moja pamięć jest pusta.";
 
 
 
-// WIEDZA OFFLINE
+
+// WIEDZA LOKALNA
+
 
 let knowledge=[
 
 
+
 {
 keys:[
-"ets2",
 "ets",
+"ets2",
 "euro truck",
 "scs",
 "ciężarów",
-"ciezarow"
+"ciezarów"
 ],
 
 answer:
-"Euro Truck Simulator 2 to gra firmy SCS Software. Kierujesz ciężarówkami po Europie, wykonujesz zlecenia, rozwijasz firmę i kupujesz kolejne pojazdy."
+"Euro Truck Simulator 2 to gra firmy SCS Software. Prowadzisz ciężarówki po Europie, rozwijasz firmę i wykonujesz transporty."
 },
+
 
 
 
@@ -511,20 +563,23 @@ keys:[
 ],
 
 answer:
-"GTA to seria gier firmy Rockstar Games. Słynie z otwartego świata, fabuły i dużej swobody działania."
+"GTA to seria gier firmy Rockstar Games z otwartym światem."
 },
+
 
 
 
 {
 keys:[
 "barszcz sosnowskiego",
-"barszcz"
+"barszcz",
+"parzy roślina"
 ],
 
 answer:
-"Barszcz Sosnowskiego to duża roślina inwazyjna. Ma ogromne liście i białe kwiatostany. Kontakt ze skórą może powodować groźne podrażnienia."
+"Barszcz Sosnowskiego to duża roślina inwazyjna. Kontakt ze skórą może powodować silne podrażnienia."
 },
+
 
 
 
@@ -535,33 +590,24 @@ keys:[
 ],
 
 answer:
-"AI czyli sztuczna inteligencja pozwala komputerom analizować dane, uczyć się i wykonywać zadania podobne do ludzkiego rozumowania."
+"AI czyli sztuczna inteligencja pozwala komputerom analizować dane i wykonywać zadania wymagające wcześniej ludzkiej inteligencji."
 },
+
 
 
 
 {
 keys:[
-"pies",
-"psy"
-],
-
-answer:
-"Psy to zwierzęta znane z przywiązania do człowieka, inteligencji i świetnego węchu."
-},
-
-
-
-{
-keys:[
-"redmi",
+"android",
 "telefon",
-"android"
+"redmi"
 ],
 
 answer:
-"Android to system operacyjny używany w wielu telefonach. Redmi to marka smartfonów firmy Xiaomi."
+"Android to system operacyjny używany w telefonach. Redmi to marka smartfonów Xiaomi."
 }
+
+
 
 
 ];
@@ -572,17 +618,24 @@ answer:
 
 for(let item of knowledge){
 
-for(let key of item.keys){
 
-if(t.includes(key)){
+for(let word of item.keys){
+
+
+if(q.includes(word)){
+
 
 return item.answer;
 
-}
 
 }
 
+
 }
+
+
+}
+
 
 
 
@@ -591,17 +644,19 @@ return item.answer;
 
 // CZAS
 
+
 if(
-t.includes("godzina") ||
-t.includes("czas")
+q.includes("godzina") ||
+q.includes("czas")
 ){
 
-let now=new Date();
+
+let d=new Date();
 
 
 return "Jest teraz godzina "+
-now.getHours()+":"+
-String(now.getMinutes()).padStart(2,"0")+".";
+d.getHours()+":"+
+String(d.getMinutes()).padStart(2,"0")+".";
 
 }
 
@@ -609,14 +664,14 @@ String(now.getMinutes()).padStart(2,"0")+".";
 
 
 
-
 // DATA
 
+
 if(
-t.includes("data") ||
-t.includes("dzień") ||
-t.includes("dzien")
+q.includes("data") ||
+q.includes("dzisiaj")
 ){
+
 
 return "Dzisiaj jest "+
 new Date().toLocaleDateString("pl-PL")+".";
@@ -628,39 +683,37 @@ new Date().toLocaleDateString("pl-PL")+".";
 
 
 
-// POWITANIA
 
-if(
-t.includes("siema") ||
-t.includes("hej") ||
-t.includes("cześć") ||
-t.includes("czesc")
-){
-
-return "Siema 😎 Wariat AI V11.2 działa.";
-
-}
+// HISTORIA ROZMOWY
 
 
+memory.history.push({
+
+user:text,
+
+date:new Date().toLocaleString()
+
+});
 
 
+if(memory.history.length>20){
 
-
-if(
-t.includes("kim jesteś") ||
-t.includes("kim jestes")
-){
-
-return "Jestem Wariat AI V11.2. Mam pamięć i lokalną bazę wiedzy.";
+memory.history.shift();
 
 }
 
 
+saveMemory();
 
 
 
 
-return "Nie znam jeszcze odpowiedzi na to pytanie, ale mogę się rozwijać.";
+
+
+// MIEJSCE NA PRAWDZIWE AI
+
+
+return "Nie mam jeszcze tej informacji w lokalnej bazie. Moduł zewnętrznego AI jest przygotowany do podłączenia.";
 
 }
 
@@ -688,11 +741,13 @@ addMessage(text,"user");
 
 
 
-let answer=think(text);
+let answer=
+aiBrain(text);
 
 
 
 addMessage(answer,"ai");
+
 
 
 speak(answer);
@@ -703,11 +758,18 @@ input.value="";
 
 }
 
+// ============================
+// GŁOS
+// ============================
+
+
 function startVoice(){
 
-let SR =
+
+let SR=
 window.SpeechRecognition ||
 window.webkitSpeechRecognition;
+
 
 
 if(!SR){
@@ -719,27 +781,34 @@ return;
 }
 
 
+
 let rec=new SR();
 
 
+
 rec.lang="pl-PL";
+
 
 
 rec.start();
 
 
 
+
 rec.onresult=function(e){
 
 
-document.getElementById("msg").value =
+document.getElementById("msg").value=
 e.results[0][0].transcript;
+
 
 
 sendMessage();
 
 
+
 };
+
 
 
 }
@@ -750,13 +819,18 @@ sendMessage();
 
 
 
+// ============================
+// KAMERA
+// ============================
+
+
 async function startCamera(){
 
 
 try{
 
 
-stream =
+stream=
 await navigator.mediaDevices.getUserMedia({
 
 video:{
@@ -798,16 +872,19 @@ addMessage(
 
 }
 
+
 catch(e){
 
 
 addMessage(
-"❌ Nie udało się uruchomić kamery.",
+"❌ Kamera niedostępna.",
 "ai"
 );
 
 
+
 }
+
 
 }
 
@@ -822,12 +899,15 @@ function takeView(){
 
 if(!video){
 
+
 addMessage(
 "Najpierw uruchom kamerę.",
 "ai"
 );
 
+
 return;
+
 
 }
 
@@ -862,10 +942,12 @@ document.getElementById("photo").innerHTML=
 "<img src='"+img+"'>";
 
 
+
 addMessage(
 "👁️ Zdjęcie wykonane.",
 "ai"
 );
+
 
 
 }
@@ -881,10 +963,13 @@ function stopCamera(){
 
 if(stream){
 
+
 stream.getTracks()
 .forEach(t=>t.stop());
 
+
 }
+
 
 
 stream=null;
@@ -895,13 +980,16 @@ video=null;
 document.getElementById("camera").innerHTML="";
 
 
+
 addMessage(
 "⛔ Kamera wyłączona.",
 "ai"
 );
 
 
+
 }
+
 
 
 
@@ -913,7 +1001,7 @@ function showMemory(){
 
 
 addMessage(
-"🧠 "+think("co pamiętasz"),
+"🧠 "+aiBrain("co pamiętasz"),
 "ai"
 );
 
@@ -931,18 +1019,22 @@ function clearMemory(){
 memory={
 
 name:"",
-facts:[]
+facts:[],
+history:[]
 
 };
 
 
+
 saveMemory();
+
 
 
 addMessage(
 "🗑️ Pamięć wyczyszczona.",
 "ai"
 );
+
 
 
 }
@@ -969,25 +1061,19 @@ addMessage(
 );
 
 
+
 }else{
 
 
 addMessage(
-"😎 Wariat AI V11.2 gotowy.",
+"😎 Wariat AI V12.0 gotowy.",
 "ai"
 );
+
 
 
 }
 
 
+
 };
-
-
-
-</script>
-
-
-</body>
-
-</html>
