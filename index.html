@@ -6,9 +6,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Wariat AI V10</title>
+<title>Wariat AI V10.1</title>
 
 <meta name="theme-color" content="#2563eb">
+
 
 <style>
 
@@ -113,6 +114,7 @@ font-size:16px;
 }
 
 
+
 .buttons{
 
 display:grid;
@@ -120,6 +122,7 @@ grid-template-columns:1fr 1fr;
 gap:10px;
 
 }
+
 
 
 video,img{
@@ -143,7 +146,7 @@ margin-top:15px;
 <div class="app">
 
 
-<h1>🤖 Wariat AI V10</h1>
+<h1>🤖 Wariat AI V10.1</h1>
 
 
 <div class="avatar">
@@ -151,11 +154,12 @@ margin-top:15px;
 </div>
 
 
-<div class="status" id="memoryInfo">
+<div class="status">
 
 🧠 Pamięć Wariata aktywna
 
 </div>
+
 
 
 <div id="chat"></div>
@@ -169,11 +173,12 @@ Wyślij
 </button>
 
 
+
 <div class="buttons">
 
 
 <button onclick="startVoice()">
-🎤 Mów
+🎤 Głos
 </button>
 
 
@@ -183,7 +188,7 @@ Wyślij
 
 
 <button onclick="takeView()">
-👁️ Patrz
+👁️ Zobacz
 </button>
 
 
@@ -205,16 +210,18 @@ Wyślij
 </div>
 
 
+
 <div id="camera"></div>
 
-
 <div id="photo"></div>
+
 
 
 <script>
 
 
-let chat=document.getElementById("chat");
+let chat =
+document.getElementById("chat");
 
 
 let stream=null;
@@ -223,32 +230,24 @@ let video=null;
 
 
 
-let memory = JSON.parse(
-
+let memory =
+JSON.parse(
 localStorage.getItem("wariat_memory")
-
 )
-
 ||
-
 {
-
 name:"",
-
 facts:[]
-
 };
+
 
 
 
 function saveMemory(){
 
 localStorage.setItem(
-
 "wariat_memory",
-
 JSON.stringify(memory)
-
 );
 
 }
@@ -271,58 +270,78 @@ div.innerText=text;
 chat.appendChild(div);
 
 
-chat.scrollTop=chat.scrollHeight;
+chat.scrollTop=
+chat.scrollHeight;
 
 
 }
 
+
+
+
 function speak(text){
+
 
 let speech =
 new SpeechSynthesisUtterance(text);
 
+
 speech.lang="pl-PL";
+
 
 speech.rate=0.95;
 
+
 speech.pitch=1;
+
 
 speechSynthesis.speak(speech);
 
-}
 
+}
 
 
 
 
 function think(text){
 
-let t=text.toLowerCase();
+
+let t=text.toLowerCase().trim();
 
 
 
-if(t.includes("mam na imię")){
+if(
+t.includes("mam na imię") ||
+t.includes("mam na imie")
+){
+
 
 let name=text
-.split("mam na imię")[1]
+.replace(/mam na imię/i,"")
+.replace(/mam na imie/i,"")
 .trim();
 
 
-memory.name=name;
+
+memory.name =
+name.charAt(0).toUpperCase()
++
+name.slice(1);
+
 
 
 saveMemory();
 
 
-return "Zapamiętałem. Od teraz będę mówił do Ciebie "+name+".";
+
+return "Zapamiętałem. Od teraz będę mówił do Ciebie "+memory.name+".";
 
 }
 
-
-
-
-if(t.includes("jak mam na imię")){
-
+if(
+t.includes("jak mam na imię") ||
+t.includes("jak mam na imie")
+){
 
 if(memory.name){
 
@@ -330,20 +349,21 @@ return "Masz na imię "+memory.name+".";
 
 }
 
-
-return "Jeszcze mi nie powiedziałeś jak masz na imię.";
+return "Jeszcze mi nie powiedziałeś swojego imienia.";
 
 }
 
 
 
 
-
-if(t.includes("zapamiętaj")){
-
+if(
+t.startsWith("zapamiętaj") ||
+t.startsWith("zapamietaj")
+){
 
 let info=text
-.replace("zapamiętaj","")
+.replace(/zapamiętaj/i,"")
+.replace(/zapamietaj/i,"")
 .trim();
 
 
@@ -360,51 +380,88 @@ return "Dobra, zapamiętałem: "+info;
 }
 
 
+return "Powiedz mi co mam zapamiętać.";
+
 }
 
 
 
 
-if(t.includes("co pamiętasz")){
 
+if(
+t.includes("co pamiętasz") ||
+t.includes("co pamietasz")
+){
 
-let wynik="";
+let result="";
 
 
 if(memory.name){
 
-wynik+="Imię: "+memory.name+". ";
+result+="Twoje imię to "+memory.name+". ";
 
 }
 
 
 if(memory.facts.length){
 
-wynik+="Pamiętam też: "+memory.facts.join(", ");
-
-}
-
-
-if(!wynik){
-
-wynik="Na razie moja pamięć jest pusta.";
-
-}
-
-
-return wynik;
+result+="Pamiętam też: "+
+memory.facts.join(", ")+". ";
 
 }
 
 
 
+if(!result){
+
+result="Moja pamięć jest jeszcze pusta.";
+
+}
 
 
-if(t.includes("cześć") ||
-t.includes("hej")){
+return result;
+
+}
 
 
-return "Siema 😎 Jestem Wariat AI V10. Co robimy?";
+
+
+
+if(
+t.includes("cześć") ||
+t.includes("czesc") ||
+t.includes("hej") ||
+t.includes("siema")
+){
+
+
+let answers=[
+
+"Siema 😎 Co dziś robimy?",
+
+"Witaj 😎 Jestem gotowy.",
+
+"No hej. Działamy dalej?"
+
+];
+
+
+return answers[
+Math.floor(Math.random()*answers.length)
+];
+
+
+}
+
+
+
+
+
+if(t.includes("co tam u ciebie")){
+
+
+return "U mnie dobrze 😎 Działam i rozwijamy Wariata krok po kroku.";
+
 
 }
 
@@ -414,15 +471,44 @@ return "Siema 😎 Jestem Wariat AI V10. Co robimy?";
 if(t.includes("kim jesteś")){
 
 
-return "Jestem Wariat AI. Twój cyfrowy pomocnik.";
+return "Jestem Wariat AI. Twoim cyfrowym pomocnikiem.";
+
 
 }
 
 
 
 
+if(
+t.includes("dziękuję") ||
+t.includes("dziekuje")
+){
 
-return "Słucham. Jeszcze się uczę, ale działam i jestem z Tobą.";
+
+return "Nie ma sprawy 😎";
+
+}
+
+
+
+
+let fallback=[
+
+"Słucham 😎",
+
+"Jestem tutaj. Mów dalej.",
+
+"Jeszcze się uczę, ale działam.",
+
+"Co robimy dalej?"
+
+];
+
+
+return fallback[
+Math.floor(Math.random()*fallback.length)
+];
+
 
 }
 
@@ -434,10 +520,13 @@ return "Słucham. Jeszcze się uczę, ale działam i jestem z Tobą.";
 function sendMessage(){
 
 
-let input=document.getElementById("msg");
+let input =
+document.getElementById("msg");
 
 
-let text=input.value.trim();
+let text =
+input.value.trim();
+
 
 
 if(!text)return;
@@ -451,7 +540,8 @@ text,
 
 
 
-let answer=think(text);
+let answer =
+think(text);
 
 
 
@@ -474,6 +564,7 @@ input.value="";
 
 
 
+
 function startVoice(){
 
 
@@ -485,7 +576,7 @@ window.webkitSpeechRecognition;
 
 if(!Recognition){
 
-alert("Telefon nie obsługuje rozpoznawania głosu");
+alert("Telefon nie obsługuje głosu");
 
 return;
 
@@ -493,7 +584,9 @@ return;
 
 
 
-let rec=new Recognition();
+let rec =
+new Recognition();
+
 
 
 rec.lang="pl-PL";
@@ -518,7 +611,6 @@ sendMessage();
 
 
 };
-
 
 
 }
@@ -546,7 +638,9 @@ audio:false
 
 
 
-video=document.createElement("video");
+video =
+document.createElement("video");
+
 
 
 video.autoplay=true;
@@ -558,8 +652,7 @@ video.srcObject=stream;
 
 
 
-document.getElementById("camera")
-.innerHTML="";
+document.getElementById("camera").innerHTML="";
 
 
 document.getElementById("camera")
@@ -568,20 +661,19 @@ document.getElementById("camera")
 
 
 addMessage(
-"📷 Kamera uruchomiona.",
+"📷 Kamera działa.",
 "ai"
 );
 
 
 
 }
-
 
 catch(e){
 
 
 addMessage(
-"❌ Nie mogę uruchomić kamery.",
+"❌ Problem z kamerą.",
 "ai"
 );
 
@@ -590,16 +682,23 @@ addMessage(
 
 
 }
+
+
+
+
+
 
 function takeView(){
 
 
 if(!video){
 
+
 addMessage(
 "Najpierw włącz kamerę.",
 "ai"
 );
+
 
 return;
 
@@ -607,23 +706,35 @@ return;
 
 
 
-let canvas=document.createElement("canvas");
-
-
-canvas.width=video.videoWidth;
-
-canvas.height=video.videoHeight;
+let canvas =
+document.createElement("canvas");
 
 
 
-let ctx=canvas.getContext("2d");
+canvas.width =
+video.videoWidth;
 
 
-ctx.drawImage(video,0,0);
+canvas.height =
+video.videoHeight;
 
 
 
-let img=canvas.toDataURL(
+let ctx =
+canvas.getContext("2d");
+
+
+
+ctx.drawImage(
+video,
+0,
+0
+);
+
+
+
+let img =
+canvas.toDataURL(
 "image/jpeg",
 0.8
 );
@@ -631,16 +742,15 @@ let img=canvas.toDataURL(
 
 
 document.getElementById("photo")
-.innerHTML=
+.innerHTML =
 "<img src='"+img+"'>";
 
 
 
 addMessage(
-"👁️ Widzę obraz z kamery. Na razie uczę się rozpoznawania świata.",
+"👁️ Zrobiłem zdjęcie. Na razie widzę obraz, ale uczę się rozpoznawania świata.",
 "ai"
 );
-
 
 
 }
@@ -659,6 +769,7 @@ track=>track.stop()
 );
 
 }
+
 
 
 stream=null;
@@ -683,14 +794,14 @@ addMessage(
 function showMemory(){
 
 
-let text=think("co pamiętasz");
+let result =
+think("co pamiętasz");
 
 
 addMessage(
-"🧠 "+text,
+"🧠 "+result,
 "ai"
 );
-
 
 
 }
@@ -704,7 +815,6 @@ function clearMemory(){
 memory={
 
 name:"",
-
 facts:[]
 
 };
@@ -714,12 +824,10 @@ facts:[]
 saveMemory();
 
 
-
 addMessage(
 "🗑️ Pamięć wyczyszczona.",
 "ai"
 );
-
 
 
 }
@@ -732,16 +840,18 @@ window.onload=function(){
 
 if(memory.name){
 
+
 addMessage(
 "Witaj ponownie "+memory.name+" 😎",
 "ai"
 );
 
+
 }else{
 
 
 addMessage(
-"Siema 😎 Jestem Wariat AI V10.",
+"Siema 😎 Jestem Wariat AI V10.1.",
 "ai"
 );
 
@@ -759,3 +869,4 @@ addMessage(
 </body>
 
 </html>
+
