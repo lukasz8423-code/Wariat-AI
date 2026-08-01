@@ -6,9 +6,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Wariat AI V11.1</title>
+<title>Wariat AI V11.2</title>
 
 <meta name="theme-color" content="#2563eb">
+
 
 <style>
 
@@ -36,13 +37,11 @@ box-shadow:0 0 30px black;
 }
 
 
-
 h1{
 
 text-align:center;
 
 }
-
 
 
 .avatar{
@@ -60,7 +59,6 @@ background:#111827;
 padding:12px;
 border-radius:15px;
 text-align:center;
-margin-bottom:10px;
 
 }
 
@@ -73,6 +71,7 @@ overflow:auto;
 background:#111827;
 padding:10px;
 border-radius:15px;
+margin-top:10px;
 
 }
 
@@ -109,8 +108,8 @@ input{
 width:90%;
 padding:12px;
 margin-top:10px;
-border:0;
 border-radius:10px;
+border:0;
 
 }
 
@@ -149,10 +148,11 @@ margin-top:15px;
 
 }
 
-
 </style>
 
+
 </head>
+
 
 
 <body>
@@ -161,22 +161,21 @@ margin-top:15px;
 <div class="app">
 
 
-<h1>🤖 Wariat AI V11.1</h1>
+<h1>🤖 Wariat AI V11.2</h1>
 
 
 <div class="avatar">
-
 😎
-
 </div>
 
 
 
 <div class="mode">
 
-🟢 Tryb OFFLINE — baza wiedzy aktywna
+🟢 Tryb OFFLINE | 🧠 Pamięć aktywna
 
 </div>
+
 
 
 
@@ -201,49 +200,32 @@ Wyślij
 
 
 <button onclick="startVoice()">
-
 🎤 Głos
-
 </button>
-
 
 
 <button onclick="startCamera()">
-
 📷 Kamera
-
 </button>
-
 
 
 <button onclick="takeView()">
-
 👁️ Zobacz
-
 </button>
-
 
 
 <button onclick="stopCamera()">
-
 ⛔ Stop
-
 </button>
-
 
 
 <button onclick="showMemory()">
-
 🧠 Pamięć
-
 </button>
 
 
-
 <button onclick="clearMemory()">
-
 🗑️ Wyczyść
-
 </button>
 
 
@@ -251,15 +233,14 @@ Wyślij
 
 
 
-<div id="camera"></div>
 
+<div id="camera"></div>
 
 <div id="photo"></div>
 
 
 
 <script>
-
 
 
 let chat =
@@ -269,20 +250,58 @@ document.getElementById("chat");
 
 let stream=null;
 
-
 let video=null;
 
 
 
-let memory =
-JSON.parse(
-localStorage.getItem("wariat_memory")
-)
-||
-{
+
+// =====================
+// PAMIĘĆ WARIATA
+// =====================
+
+
+let memory={
+
+name:"",
+facts:[]
+
+};
+
+
+
+
+function loadMemory(){
+
+
+let saved =
+localStorage.getItem("wariat_memory");
+
+
+
+if(saved){
+
+
+try{
+
+memory=JSON.parse(saved);
+
+
+}
+
+catch(e){
+
+memory={
 name:"",
 facts:[]
 };
+
+}
+
+
+}
+
+
+}
 
 
 
@@ -290,12 +309,15 @@ facts:[]
 
 function saveMemory(){
 
+
 localStorage.setItem(
 "wariat_memory",
 JSON.stringify(memory)
 );
 
+
 }
+
 
 
 
@@ -324,11 +346,10 @@ chat.scrollHeight;
 
 
 
-
 function speak(text){
 
 
-let speech =
+let speech=
 new SpeechSynthesisUtterance(text);
 
 
@@ -351,6 +372,8 @@ function think(text){
 let t=text.toLowerCase().trim();
 
 
+
+// IMIĘ
 
 if(
 t.includes("mam na imię") ||
@@ -379,7 +402,6 @@ return "Zapamiętałem. Od teraz będę mówił do Ciebie "+memory.name+".";
 
 
 
-
 if(
 t.includes("jak mam na imię") ||
 t.includes("jak mam na imie")
@@ -396,6 +418,8 @@ return memory.name
 
 
 
+
+// ZAPIS INFORMACJI
 
 if(
 t.startsWith("zapamiętaj") ||
@@ -414,6 +438,7 @@ memory.facts.push(info);
 
 saveMemory();
 
+
 return "Zapamiętałem: "+info;
 
 }
@@ -424,30 +449,32 @@ return "Zapamiętałem: "+info;
 
 
 
+// PAMIĘĆ
+
 if(
 t.includes("co pamiętasz") ||
 t.includes("co pamietasz")
 ){
 
-let r="";
+let answer="";
 
 
 if(memory.name){
 
-r+="Twoje imię to "+memory.name+". ";
+answer+="Masz na imię "+memory.name+". ";
 
 }
 
 
 if(memory.facts.length){
 
-r+="Pamiętam: "+
+answer+="Zapamiętałem: "+
 memory.facts.join(", ")+". ";
 
 }
 
 
-return r || "Moja pamięć jest pusta.";
+return answer || "Moja pamięć jest pusta.";
 
 }
 
@@ -455,41 +482,90 @@ return r || "Moja pamięć jest pusta.";
 
 
 
+
+// WIEDZA OFFLINE
 
 let knowledge=[
 
 
 {
-keys:["barszcz sosnowskiego","barszcz"],
-answer:"Barszcz Sosnowskiego to duża roślina inwazyjna. Ma ogromne liście i białe kwiatostany. Kontakt ze skórą może powodować silne podrażnienia, szczególnie po słońcu."
+keys:[
+"ets2",
+"ets",
+"euro truck",
+"scs",
+"ciężarów",
+"ciezarow"
+],
+
+answer:
+"Euro Truck Simulator 2 to gra firmy SCS Software. Kierujesz ciężarówkami po Europie, wykonujesz zlecenia, rozwijasz firmę i kupujesz kolejne pojazdy."
 },
 
 
+
 {
-keys:["ets2","euro truck simulator","euro truck"],
-answer:"Euro Truck Simulator 2 to gra, w której prowadzisz ciężarówki po Europie, rozwijasz firmę i wykonujesz transporty."
+keys:[
+"gta",
+"grand theft auto"
+],
+
+answer:
+"GTA to seria gier firmy Rockstar Games. Słynie z otwartego świata, fabuły i dużej swobody działania."
 },
 
 
+
 {
-keys:["gta","grand theft auto"],
-answer:"GTA to seria gier firmy Rockstar Games, znana z otwartego świata i dużej swobody."
+keys:[
+"barszcz sosnowskiego",
+"barszcz"
+],
+
+answer:
+"Barszcz Sosnowskiego to duża roślina inwazyjna. Ma ogromne liście i białe kwiatostany. Kontakt ze skórą może powodować groźne podrażnienia."
 },
 
 
+
 {
-keys:["ai","sztuczna inteligencja"],
-answer:"Sztuczna inteligencja to technologia, która pozwala komputerom analizować informacje i wykonywać zadania wymagające wcześniej ludzkiej inteligencji."
+keys:[
+"sztuczna inteligencja",
+"ai"
+],
+
+answer:
+"AI czyli sztuczna inteligencja pozwala komputerom analizować dane, uczyć się i wykonywać zadania podobne do ludzkiego rozumowania."
 },
 
 
+
 {
-keys:["pies","psy"],
-answer:"Psy to zwierzęta domowe znane z przywiązania do człowieka, inteligencji i dobrego węchu."
+keys:[
+"pies",
+"psy"
+],
+
+answer:
+"Psy to zwierzęta znane z przywiązania do człowieka, inteligencji i świetnego węchu."
+},
+
+
+
+{
+keys:[
+"redmi",
+"telefon",
+"android"
+],
+
+answer:
+"Android to system operacyjny używany w wielu telefonach. Redmi to marka smartfonów firmy Xiaomi."
 }
 
 
 ];
+
 
 
 
@@ -512,6 +588,9 @@ return item.answer;
 
 
 
+
+// CZAS
+
 if(
 t.includes("godzina") ||
 t.includes("czas")
@@ -530,10 +609,13 @@ String(now.getMinutes()).padStart(2,"0")+".";
 
 
 
+
+// DATA
+
 if(
 t.includes("data") ||
-t.includes("jaki dzień") ||
-t.includes("jaki dzien")
+t.includes("dzień") ||
+t.includes("dzien")
 ){
 
 return "Dzisiaj jest "+
@@ -545,16 +627,20 @@ new Date().toLocaleDateString("pl-PL")+".";
 
 
 
+
+// POWITANIA
+
 if(
-t.includes("hej") ||
 t.includes("siema") ||
+t.includes("hej") ||
 t.includes("cześć") ||
 t.includes("czesc")
 ){
 
-return "Siema 😎 Wariat AI V11.1 działa.";
+return "Siema 😎 Wariat AI V11.2 działa.";
 
 }
+
 
 
 
@@ -565,7 +651,7 @@ t.includes("kim jesteś") ||
 t.includes("kim jestes")
 ){
 
-return "Jestem Wariat AI V11.1. Działam offline i mam własną bazę wiedzy.";
+return "Jestem Wariat AI V11.2. Mam pamięć i lokalną bazę wiedzy.";
 
 }
 
@@ -573,9 +659,12 @@ return "Jestem Wariat AI V11.1. Działam offline i mam własną bazę wiedzy.";
 
 
 
-return "Jeszcze tego nie wiem, ale mogę się nauczyć. Spróbuj zapytać inaczej.";
+
+return "Nie znam jeszcze odpowiedzi na to pytanie, ale mogę się rozwijać.";
 
 }
+
+
 
 
 
@@ -590,6 +679,7 @@ let input=document.getElementById("msg");
 let text=input.value.trim();
 
 
+
 if(!text)return;
 
 
@@ -597,7 +687,9 @@ if(!text)return;
 addMessage(text,"user");
 
 
+
 let answer=think(text);
+
 
 
 addMessage(answer,"ai");
@@ -606,13 +698,14 @@ addMessage(answer,"ai");
 speak(answer);
 
 
+
 input.value="";
 
 }
 
 function startVoice(){
 
-let SR=
+let SR =
 window.SpeechRecognition ||
 window.webkitSpeechRecognition;
 
@@ -635,15 +728,19 @@ rec.lang="pl-PL";
 rec.start();
 
 
+
 rec.onresult=function(e){
 
-document.getElementById("msg").value=
+
+document.getElementById("msg").value =
 e.results[0][0].transcript;
 
 
 sendMessage();
 
+
 };
+
 
 }
 
@@ -651,11 +748,15 @@ sendMessage();
 
 
 
+
+
 async function startCamera(){
+
 
 try{
 
-stream=
+
+stream =
 await navigator.mediaDevices.getUserMedia({
 
 video:{
@@ -665,6 +766,7 @@ facingMode:"environment"
 audio:false
 
 });
+
 
 
 video=document.createElement("video");
@@ -678,6 +780,7 @@ video.playsInline=true;
 video.srcObject=stream;
 
 
+
 document.getElementById("camera").innerHTML="";
 
 
@@ -687,29 +790,35 @@ document.getElementById("camera")
 
 
 addMessage(
-"📷 Kamera działa.",
+"📷 Kamera uruchomiona.",
 "ai"
 );
+
 
 
 }
 
 catch(e){
 
+
 addMessage(
-"❌ Kamera nie działa.",
+"❌ Nie udało się uruchomić kamery.",
 "ai"
 );
 
+
 }
 
 }
+
+
 
 
 
 
 
 function takeView(){
+
 
 if(!video){
 
@@ -723,12 +832,15 @@ return;
 }
 
 
+
 let canvas=document.createElement("canvas");
 
 
 canvas.width=video.videoWidth;
 
+
 canvas.height=video.videoHeight;
+
 
 
 let ctx=canvas.getContext("2d");
@@ -751,12 +863,14 @@ document.getElementById("photo").innerHTML=
 
 
 addMessage(
-"👁️ Zdjęcie wykonane. Moduł widzenia AI czeka na rozwój.",
+"👁️ Zdjęcie wykonane.",
 "ai"
 );
 
 
 }
+
+
 
 
 
@@ -793,12 +907,16 @@ addMessage(
 
 
 
+
+
 function showMemory(){
+
 
 addMessage(
 "🧠 "+think("co pamiętasz"),
 "ai"
 );
+
 
 }
 
@@ -806,11 +924,15 @@ addMessage(
 
 
 
+
 function clearMemory(){
 
+
 memory={
+
 name:"",
 facts:[]
+
 };
 
 
@@ -829,17 +951,37 @@ addMessage(
 
 
 
+
+
 window.onload=function(){
 
 
+loadMemory();
+
+
+
+if(memory.name){
+
+
 addMessage(
-"😎 Wariat AI V11.1 gotowy.",
+"😎 Witaj ponownie "+memory.name+". Pamięć załadowana.",
 "ai"
 );
 
 
-};
+}else{
 
+
+addMessage(
+"😎 Wariat AI V11.2 gotowy.",
+"ai"
+);
+
+
+}
+
+
+};
 
 
 
