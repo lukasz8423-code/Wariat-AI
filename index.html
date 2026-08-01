@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Wariat AI V11.0</title>
+<title>Wariat AI V11.1</title>
 
 <meta name="theme-color" content="#2563eb">
 
@@ -23,43 +23,59 @@ align-items:center;
 min-height:100vh;
 }
 
+
 .app{
+
 width:95%;
 max-width:520px;
 background:#1f2937;
 padding:20px;
 border-radius:20px;
 box-shadow:0 0 30px black;
+
 }
+
+
 
 h1{
+
 text-align:center;
+
 }
 
+
+
 .avatar{
+
 font-size:80px;
 text-align:center;
+
 }
+
+
 
 .mode{
 
 background:#111827;
 padding:12px;
 border-radius:15px;
-margin-bottom:10px;
 text-align:center;
+margin-bottom:10px;
 
 }
 
+
+
 #chat{
 
-height:300px;
+height:320px;
 overflow:auto;
 background:#111827;
 padding:10px;
 border-radius:15px;
 
 }
+
 
 
 .msg{
@@ -71,11 +87,13 @@ border-radius:12px;
 }
 
 
+
 .user{
 
 background:#2563eb;
 
 }
+
 
 
 .ai{
@@ -85,15 +103,17 @@ background:#374151;
 }
 
 
+
 input{
 
 width:90%;
 padding:12px;
-border-radius:10px;
-border:0;
 margin-top:10px;
+border:0;
+border-radius:10px;
 
 }
+
 
 
 button{
@@ -110,6 +130,7 @@ font-size:16px;
 }
 
 
+
 .buttons{
 
 display:grid;
@@ -119,6 +140,7 @@ gap:10px;
 }
 
 
+
 video,img{
 
 width:100%;
@@ -126,6 +148,7 @@ border-radius:15px;
 margin-top:15px;
 
 }
+
 
 </style>
 
@@ -138,33 +161,31 @@ margin-top:15px;
 <div class="app">
 
 
-<h1>🤖 Wariat AI V11.0</h1>
+<h1>🤖 Wariat AI V11.1</h1>
 
 
 <div class="avatar">
+
 😎
-</div>
-
-
-<div class="mode" id="mode">
-
-🟢 Tryb OFFLINE
 
 </div>
 
 
-<button onclick="switchMode()">
 
-Zmień tryb
+<div class="mode">
 
-</button>
+🟢 Tryb OFFLINE — baza wiedzy aktywna
+
+</div>
 
 
 
 <div id="chat"></div>
 
 
+
 <input id="msg" placeholder="Napisz do mnie">
+
 
 
 <button onclick="sendMessage()">
@@ -175,36 +196,54 @@ Wyślij
 
 
 
+
 <div class="buttons">
 
 
 <button onclick="startVoice()">
+
 🎤 Głos
+
 </button>
+
 
 
 <button onclick="startCamera()">
+
 📷 Kamera
+
 </button>
+
 
 
 <button onclick="takeView()">
+
 👁️ Zobacz
+
 </button>
+
 
 
 <button onclick="stopCamera()">
+
 ⛔ Stop
+
 </button>
+
 
 
 <button onclick="showMemory()">
+
 🧠 Pamięć
+
 </button>
 
 
+
 <button onclick="clearMemory()">
+
 🗑️ Wyczyść
+
 </button>
 
 
@@ -214,6 +253,7 @@ Wyślij
 
 <div id="camera"></div>
 
+
 <div id="photo"></div>
 
 
@@ -221,15 +261,16 @@ Wyślij
 <script>
 
 
-let chat=document.getElementById("chat");
+
+let chat =
+document.getElementById("chat");
+
 
 
 let stream=null;
 
+
 let video=null;
-
-
-let aiMode=false;
 
 
 
@@ -246,6 +287,7 @@ facts:[]
 
 
 
+
 function saveMemory(){
 
 localStorage.setItem(
@@ -254,6 +296,7 @@ JSON.stringify(memory)
 );
 
 }
+
 
 
 
@@ -272,7 +315,8 @@ div.innerText=text;
 chat.appendChild(div);
 
 
-chat.scrollTop=chat.scrollHeight;
+chat.scrollTop=
+chat.scrollHeight;
 
 
 }
@@ -301,51 +345,6 @@ speechSynthesis.speak(speech);
 
 
 }
-
-
-
-
-
-function switchMode(){
-
-
-aiMode=!aiMode;
-
-
-document.getElementById("mode").innerHTML =
-aiMode
-?
-"🔵 Tryb AI (oczekuje połączenia)"
-:
-"🟢 Tryb OFFLINE";
-
-
-addMessage(
-aiMode
-?
-"Tryb AI włączony. Czekam na silnik AI."
-:
-"Tryb offline aktywny."
-,
-"ai"
-);
-
-
-}
-
-function getTime(){
-
-let now=new Date();
-
-return "Jest teraz godzina "+
-now.getHours()+":"+
-String(now.getMinutes()).padStart(2,"0")+".";
-
-}
-
-
-
-
 
 function think(text){
 
@@ -380,11 +379,11 @@ return "Zapamiętałem. Od teraz będę mówił do Ciebie "+memory.name+".";
 
 
 
+
 if(
 t.includes("jak mam na imię") ||
 t.includes("jak mam na imie")
 ){
-
 
 return memory.name
 ?
@@ -398,8 +397,10 @@ return memory.name
 
 
 
-if(t.startsWith("zapamiętaj") || t.startsWith("zapamietaj")){
-
+if(
+t.startsWith("zapamiętaj") ||
+t.startsWith("zapamietaj")
+){
 
 let info=text
 .replace(/zapamiętaj/i,"")
@@ -413,13 +414,12 @@ memory.facts.push(info);
 
 saveMemory();
 
-
 return "Zapamiętałem: "+info;
 
 }
 
-
 }
+
 
 
 
@@ -428,7 +428,6 @@ if(
 t.includes("co pamiętasz") ||
 t.includes("co pamietasz")
 ){
-
 
 let r="";
 
@@ -456,12 +455,74 @@ return r || "Moja pamięć jest pusta.";
 
 
 
+
+let knowledge=[
+
+
+{
+keys:["barszcz sosnowskiego","barszcz"],
+answer:"Barszcz Sosnowskiego to duża roślina inwazyjna. Ma ogromne liście i białe kwiatostany. Kontakt ze skórą może powodować silne podrażnienia, szczególnie po słońcu."
+},
+
+
+{
+keys:["ets2","euro truck simulator","euro truck"],
+answer:"Euro Truck Simulator 2 to gra, w której prowadzisz ciężarówki po Europie, rozwijasz firmę i wykonujesz transporty."
+},
+
+
+{
+keys:["gta","grand theft auto"],
+answer:"GTA to seria gier firmy Rockstar Games, znana z otwartego świata i dużej swobody."
+},
+
+
+{
+keys:["ai","sztuczna inteligencja"],
+answer:"Sztuczna inteligencja to technologia, która pozwala komputerom analizować informacje i wykonywać zadania wymagające wcześniej ludzkiej inteligencji."
+},
+
+
+{
+keys:["pies","psy"],
+answer:"Psy to zwierzęta domowe znane z przywiązania do człowieka, inteligencji i dobrego węchu."
+}
+
+
+];
+
+
+
+
+for(let item of knowledge){
+
+for(let key of item.keys){
+
+if(t.includes(key)){
+
+return item.answer;
+
+}
+
+}
+
+}
+
+
+
+
+
 if(
 t.includes("godzina") ||
 t.includes("czas")
 ){
 
-return getTime();
+let now=new Date();
+
+
+return "Jest teraz godzina "+
+now.getHours()+":"+
+String(now.getMinutes()).padStart(2,"0")+".";
 
 }
 
@@ -471,9 +532,9 @@ return getTime();
 
 if(
 t.includes("data") ||
-t.includes("dzień")
+t.includes("jaki dzień") ||
+t.includes("jaki dzien")
 ){
-
 
 return "Dzisiaj jest "+
 new Date().toLocaleDateString("pl-PL")+".";
@@ -485,13 +546,13 @@ new Date().toLocaleDateString("pl-PL")+".";
 
 
 if(
-t.includes("cześć") ||
-t.includes("czesc") ||
 t.includes("hej") ||
-t.includes("siema")
+t.includes("siema") ||
+t.includes("cześć") ||
+t.includes("czesc")
 ){
 
-return "Siema 😎 Jestem Wariat AI V11. Działamy.";
+return "Siema 😎 Wariat AI V11.1 działa.";
 
 }
 
@@ -500,10 +561,11 @@ return "Siema 😎 Jestem Wariat AI V11. Działamy.";
 
 
 if(
-t.includes("kim jesteś")
+t.includes("kim jesteś") ||
+t.includes("kim jestes")
 ){
 
-return "Jestem Wariat AI V11. Mam tryb offline i przygotowanie pod prawdziwe AI.";
+return "Jestem Wariat AI V11.1. Działam offline i mam własną bazę wiedzy.";
 
 }
 
@@ -511,35 +573,9 @@ return "Jestem Wariat AI V11. Mam tryb offline i przygotowanie pod prawdziwe AI.
 
 
 
-if(aiMode){
-
-return "Tryb AI jest przygotowany, ale silnik AI nie jest jeszcze podłączony.";
+return "Jeszcze tego nie wiem, ale mogę się nauczyć. Spróbuj zapytać inaczej.";
 
 }
-
-
-
-
-let answers=[
-
-"Rozumiem 😎",
-
-"Słucham.",
-
-"Jestem tutaj.",
-
-"Możemy działać dalej."
-
-];
-
-
-return answers[
-Math.floor(Math.random()*answers.length)
-];
-
-
-}
-
 
 
 
@@ -558,45 +594,27 @@ if(!text)return;
 
 
 
-addMessage(
-text,
-"user"
-);
-
+addMessage(text,"user");
 
 
 let answer=think(text);
 
 
-
-addMessage(
-answer,
-"ai"
-);
-
+addMessage(answer,"ai");
 
 
 speak(answer);
 
 
-
 input.value="";
-
 
 }
 
-
-
-
-
-
 function startVoice(){
-
 
 let SR=
 window.SpeechRecognition ||
 window.webkitSpeechRecognition;
-
 
 
 if(!SR){
@@ -608,7 +626,6 @@ return;
 }
 
 
-
 let rec=new SR();
 
 
@@ -618,19 +635,15 @@ rec.lang="pl-PL";
 rec.start();
 
 
-
 rec.onresult=function(e){
 
-
-document.getElementById("msg").value =
+document.getElementById("msg").value=
 e.results[0][0].transcript;
 
 
 sendMessage();
 
-
 };
-
 
 }
 
@@ -638,13 +651,9 @@ sendMessage();
 
 
 
-
-
 async function startCamera(){
 
-
 try{
-
 
 stream=
 await navigator.mediaDevices.getUserMedia({
@@ -658,7 +667,6 @@ audio:false
 });
 
 
-
 video=document.createElement("video");
 
 
@@ -668,7 +676,6 @@ video.playsInline=true;
 
 
 video.srcObject=stream;
-
 
 
 document.getElementById("camera").innerHTML="";
@@ -689,25 +696,20 @@ addMessage(
 
 catch(e){
 
-
 addMessage(
 "❌ Kamera nie działa.",
 "ai"
 );
 
-
 }
 
-
 }
-
 
 
 
 
 
 function takeView(){
-
 
 if(!video){
 
@@ -721,14 +723,12 @@ return;
 }
 
 
-
 let canvas=document.createElement("canvas");
 
 
 canvas.width=video.videoWidth;
 
 canvas.height=video.videoHeight;
-
 
 
 let ctx=canvas.getContext("2d");
@@ -738,7 +738,8 @@ ctx.drawImage(video,0,0);
 
 
 
-let img=canvas.toDataURL(
+let img=
+canvas.toDataURL(
 "image/jpeg",
 0.8
 );
@@ -749,15 +750,13 @@ document.getElementById("photo").innerHTML=
 "<img src='"+img+"'>";
 
 
-
 addMessage(
-"👁️ Zdjęcie wykonane. Moduł widzenia AI czeka na podłączenie.",
+"👁️ Zdjęcie wykonane. Moduł widzenia AI czeka na rozwój.",
 "ai"
 );
 
 
 }
-
 
 
 
@@ -769,9 +768,7 @@ function stopCamera(){
 if(stream){
 
 stream.getTracks()
-.forEach(
-t=>t.stop()
-);
+.forEach(t=>t.stop());
 
 }
 
@@ -785,13 +782,12 @@ document.getElementById("camera").innerHTML="";
 
 
 addMessage(
-"⛔ Kamera zatrzymana.",
+"⛔ Kamera wyłączona.",
 "ai"
 );
 
 
 }
-
 
 
 
@@ -799,20 +795,18 @@ addMessage(
 
 function showMemory(){
 
-
 addMessage(
 "🧠 "+think("co pamiętasz"),
 "ai"
 );
-
 
 }
 
 
 
 
-function clearMemory(){
 
+function clearMemory(){
 
 memory={
 name:"",
@@ -835,12 +829,11 @@ addMessage(
 
 
 
-
 window.onload=function(){
 
 
 addMessage(
-"😎 Wariat AI V11 gotowy.",
+"😎 Wariat AI V11.1 gotowy.",
 "ai"
 );
 
@@ -856,5 +849,3 @@ addMessage(
 </body>
 
 </html>
-
-
