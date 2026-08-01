@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Wariat AI V12.0</title>
+<title>Wariat AI V12.1</title>
 
 <meta name="theme-color" content="#2563eb">
 
@@ -37,13 +37,11 @@ box-shadow:0 0 30px black;
 }
 
 
-
 h1{
 
 text-align:center;
 
 }
-
 
 
 .avatar{
@@ -52,7 +50,6 @@ font-size:80px;
 text-align:center;
 
 }
-
 
 
 
@@ -68,7 +65,6 @@ margin-bottom:10px;
 
 
 
-
 #chat{
 
 height:320px;
@@ -78,7 +74,6 @@ padding:10px;
 border-radius:15px;
 
 }
-
 
 
 
@@ -108,17 +103,15 @@ background:#374151;
 
 
 
-
 input{
 
 width:90%;
 padding:12px;
-border-radius:10px;
 border:0;
+border-radius:10px;
 margin-top:10px;
 
 }
-
 
 
 
@@ -134,7 +127,6 @@ color:white;
 font-size:16px;
 
 }
-
 
 
 
@@ -156,22 +148,19 @@ margin-top:15px;
 
 }
 
+
 </style>
 
-
 </head>
-
 
 
 <body>
 
 
-
 <div class="app">
 
 
-<h1>🤖 Wariat AI V12.0</h1>
-
+<h1>🤖 Wariat AI V12.1</h1>
 
 
 <div class="avatar">
@@ -181,11 +170,8 @@ margin-top:15px;
 
 
 <div class="status">
-
-🧠 Nowy mózg AI | Pamięć aktywna
-
+🧠 Pamięć + Nowy mózg AI
 </div>
-
 
 
 
@@ -193,15 +179,12 @@ margin-top:15px;
 
 
 
-
 <input id="msg" placeholder="Napisz do mnie">
 
 
 
-<button onclick="sendMessage()">
-
+<button id="sendBtn">
 Wyślij
-
 </button>
 
 
@@ -235,13 +218,11 @@ Wyślij
 
 
 <button onclick="clearMemory()">
-🗑️ Reset pamięci
+🗑️ Reset
 </button>
 
 
-
 </div>
-
 
 
 
@@ -254,20 +235,20 @@ Wyślij
 <script>
 
 
-
-let chat=document.getElementById("chat");
+let chat =
+document.getElementById("chat");
 
 
 let stream=null;
-
 
 let video=null;
 
 
 
-// ============================
-// PAMIĘĆ WARIAT AI
-// ============================
+
+// =====================
+// PAMIĘĆ
+// =====================
 
 
 let memory={
@@ -285,25 +266,32 @@ history:[]
 function loadMemory(){
 
 
-let saved=
+let saved =
 localStorage.getItem("wariat_v12_memory");
+
+
+
+// odzyskanie pamięci V11
+
+if(!saved){
+
+saved =
+localStorage.getItem("wariat_memory");
+
+}
+
 
 
 
 if(saved){
 
-
 try{
-
 
 memory=JSON.parse(saved);
 
-
 }
 
-
 catch(e){
-
 
 memory={
 name:"",
@@ -311,6 +299,7 @@ facts:[],
 history:[]
 };
 
+}
 
 }
 
@@ -318,7 +307,6 @@ history:[]
 }
 
 
-}
 
 
 
@@ -332,8 +320,8 @@ JSON.stringify(memory)
 );
 
 
-}
 
+}
 
 
 
@@ -355,11 +343,12 @@ div.innerText=text;
 chat.appendChild(div);
 
 
-chat.scrollTop=chat.scrollHeight;
-
+chat.scrollTop=
+chat.scrollHeight;
 
 
 }
+
 
 
 
@@ -375,33 +364,24 @@ new SpeechSynthesisUtterance(text);
 s.lang="pl-PL";
 
 
-s.rate=0.95;
-
-
 speechSynthesis.speak(s);
-
 
 
 }
 
-
-
-
-
 // ============================
-// NOWY MÓZG WARIAT AI V12
+// MÓZG WARIAT AI V12.1
 // ============================
 
 
 function aiBrain(text){
 
-
 let q=text.toLowerCase().trim();
 
 
 
-// PAMIĘĆ IMIENIA
 
+// ZAPIS IMIENIA
 
 if(
 (q.includes("mam na imię") ||
@@ -410,7 +390,6 @@ q.includes("mam na imie"))
 !q.includes("jak mam")
 ){
 
-
 let name=text
 .replace(/mam na imię/i,"")
 .replace(/mam na imie/i,"")
@@ -418,7 +397,7 @@ let name=text
 
 
 
-memory.name=
+memory.name =
 name.charAt(0).toUpperCase()
 +
 name.slice(1);
@@ -426,7 +405,6 @@ name.slice(1);
 
 
 saveMemory();
-
 
 
 return "Zapamiętałem. Od teraz będę mówił do Ciebie "+memory.name+".";
@@ -437,19 +415,22 @@ return "Zapamiętałem. Od teraz będę mówił do Ciebie "+memory.name+".";
 
 
 
+// ODCZYT IMIENIA
+
+
 if(
 q.includes("jak mam na imię") ||
 q.includes("jak mam na imie")
 ){
 
-
 return memory.name
 ?
 "Masz na imię "+memory.name+"."
 :
-"Nie znam jeszcze Twojego imienia.";
+"Jeszcze nie znam Twojego imienia.";
 
 }
+
 
 
 
@@ -474,9 +455,7 @@ let fact=text
 
 if(fact){
 
-
 memory.facts.push(fact);
-
 
 saveMemory();
 
@@ -486,14 +465,15 @@ return "Zapamiętałem: "+fact+".";
 }
 
 
-
 }
 
 
 
 
 
-// ODCZYT PAMIĘCI
+
+
+// PAMIĘĆ
 
 
 if(
@@ -502,12 +482,12 @@ q.includes("co pamietasz")
 ){
 
 
-let r="";
+let result="";
 
 
 if(memory.name){
 
-r+="Masz na imię "+memory.name+". ";
+result+="Masz na imię "+memory.name+". ";
 
 }
 
@@ -515,14 +495,15 @@ r+="Masz na imię "+memory.name+". ";
 
 if(memory.facts.length){
 
-r+="Pamiętam: "+
+result+="Pamiętam: "+
 memory.facts.join(", ")+". ";
 
 }
 
 
 
-return r || "Moja pamięć jest pusta.";
+return result ||
+"Moja pamięć jest pusta.";
 
 }
 
@@ -532,11 +513,10 @@ return r || "Moja pamięć jest pusta.";
 
 
 
-// WIEDZA LOKALNA
+// BAZA WIEDZY
 
 
 let knowledge=[
-
 
 
 {
@@ -555,7 +535,6 @@ answer:
 
 
 
-
 {
 keys:[
 "gta",
@@ -563,23 +542,20 @@ keys:[
 ],
 
 answer:
-"GTA to seria gier firmy Rockstar Games z otwartym światem."
+"GTA to seria gier firmy Rockstar Games znana z otwartego świata."
 },
-
 
 
 
 {
 keys:[
 "barszcz sosnowskiego",
-"barszcz",
-"parzy roślina"
+"barszcz"
 ],
 
 answer:
-"Barszcz Sosnowskiego to duża roślina inwazyjna. Kontakt ze skórą może powodować silne podrażnienia."
+"Barszcz Sosnowskiego to duża roślina inwazyjna. Kontakt z jej sokiem może powodować silne podrażnienia skóry."
 },
-
 
 
 
@@ -590,24 +566,21 @@ keys:[
 ],
 
 answer:
-"AI czyli sztuczna inteligencja pozwala komputerom analizować dane i wykonywać zadania wymagające wcześniej ludzkiej inteligencji."
+"AI to sztuczna inteligencja, czyli technologia pozwalająca komputerom analizować informacje i wykonywać zadania."
 },
-
 
 
 
 {
 keys:[
 "android",
-"telefon",
-"redmi"
+"redmi",
+"telefon"
 ],
 
 answer:
 "Android to system operacyjny używany w telefonach. Redmi to marka smartfonów Xiaomi."
 }
-
-
 
 
 ];
@@ -618,21 +591,15 @@ answer:
 
 for(let item of knowledge){
 
-
 for(let word of item.keys){
-
 
 if(q.includes(word)){
 
-
 return item.answer;
 
-
 }
 
-
 }
-
 
 }
 
@@ -650,7 +617,6 @@ q.includes("godzina") ||
 q.includes("czas")
 ){
 
-
 let d=new Date();
 
 
@@ -664,14 +630,16 @@ String(d.getMinutes()).padStart(2,"0")+".";
 
 
 
+
+
 // DATA
 
 
 if(
 q.includes("data") ||
-q.includes("dzisiaj")
+q.includes("jaki dzień") ||
+q.includes("jaki dzien")
 ){
-
 
 return "Dzisiaj jest "+
 new Date().toLocaleDateString("pl-PL")+".";
@@ -683,20 +651,19 @@ new Date().toLocaleDateString("pl-PL")+".";
 
 
 
-
-// HISTORIA ROZMOWY
+// HISTORIA
 
 
 memory.history.push({
 
 user:text,
 
-date:new Date().toLocaleString()
+time:new Date().toLocaleString()
 
 });
 
 
-if(memory.history.length>20){
+if(memory.history.length>30){
 
 memory.history.shift();
 
@@ -709,11 +676,7 @@ saveMemory();
 
 
 
-
-// MIEJSCE NA PRAWDZIWE AI
-
-
-return "Nie mam jeszcze tej informacji w lokalnej bazie. Moduł zewnętrznego AI jest przygotowany do podłączenia.";
+return "Nie mam jeszcze odpowiedzi na to pytanie. To miejsce jest przygotowane pod prawdziwy silnik AI.";
 
 }
 
@@ -723,13 +686,20 @@ return "Nie mam jeszcze tej informacji w lokalnej bazie. Moduł zewnętrznego AI
 
 
 
+// ============================
+// WYSYŁANIE
+// ============================
+
+
 function sendMessage(){
 
 
-let input=document.getElementById("msg");
+let input =
+document.getElementById("msg");
 
 
-let text=input.value.trim();
+let text =
+input.value.trim();
 
 
 
@@ -741,7 +711,7 @@ addMessage(text,"user");
 
 
 
-let answer=
+let answer =
 aiBrain(text);
 
 
@@ -758,6 +728,43 @@ input.value="";
 
 }
 
+
+
+
+
+document
+.getElementById("sendBtn")
+.addEventListener(
+"click",
+sendMessage
+);
+
+
+
+
+
+document
+.getElementById("msg")
+.addEventListener(
+"keydown",
+function(e){
+
+if(e.key==="Enter"){
+
+sendMessage();
+
+}
+
+}
+);
+
+
+
+
+
+
+
+
 // ============================
 // GŁOS
 // ============================
@@ -765,9 +772,11 @@ input.value="";
 
 function startVoice(){
 
+
 let SR =
 window.SpeechRecognition ||
 window.webkitSpeechRecognition;
+
 
 
 if(!SR){
@@ -779,7 +788,8 @@ return;
 }
 
 
-let rec = new SR();
+
+let rec=new SR();
 
 
 rec.lang="pl-PL";
@@ -788,18 +798,25 @@ rec.lang="pl-PL";
 rec.start();
 
 
+
 rec.onresult=function(e){
+
 
 document.getElementById("msg").value =
 e.results[0][0].transcript;
 
 
+
 sendMessage();
+
 
 };
 
 
 }
+
+
+
 
 
 
@@ -850,7 +867,7 @@ document.getElementById("camera")
 
 
 addMessage(
-"📷 Kamera uruchomiona.",
+"📷 Kamera działa.",
 "ai"
 );
 
@@ -858,15 +875,12 @@ addMessage(
 
 }
 
-
 catch(e){
 
-
 addMessage(
-"❌ Kamera niedostępna: "+e.message,
+"❌ Kamera: "+e.message,
 "ai"
 );
-
 
 }
 
@@ -885,15 +899,12 @@ function takeView(){
 
 if(!video){
 
-
 addMessage(
 "Najpierw uruchom kamerę.",
 "ai"
 );
 
-
 return;
-
 
 }
 
@@ -904,12 +915,9 @@ document.createElement("canvas");
 
 
 
-canvas.width =
-video.videoWidth;
+canvas.width=video.videoWidth;
 
-
-canvas.height =
-video.videoHeight;
+canvas.height=video.videoHeight;
 
 
 
@@ -918,24 +926,12 @@ canvas.getContext("2d");
 
 
 
-ctx.drawImage(
-video,
-0,
-0
-);
-
-
-
-let img =
-canvas.toDataURL(
-"image/jpeg",
-0.8
-);
+ctx.drawImage(video,0,0);
 
 
 
 document.getElementById("photo").innerHTML =
-"<img src='"+img+"'>";
+"<img src='"+canvas.toDataURL("image/jpeg")+"'>";
 
 
 
@@ -943,7 +939,6 @@ addMessage(
 "👁️ Zdjęcie wykonane.",
 "ai"
 );
-
 
 
 }
@@ -960,13 +955,10 @@ function stopCamera(){
 
 if(stream){
 
-
 stream.getTracks()
 .forEach(t=>t.stop());
 
-
 }
-
 
 
 stream=null;
@@ -983,7 +975,6 @@ addMessage(
 );
 
 
-
 }
 
 
@@ -996,18 +987,14 @@ addMessage(
 function showMemory(){
 
 
-let result =
-aiBrain("co pamiętasz");
-
-
 addMessage(
-"🧠 "+result,
+"🧠 "+aiBrain("co pamiętasz"),
 "ai"
 );
 
 
-
 }
+
 
 
 
@@ -1027,19 +1014,17 @@ history:[]
 };
 
 
-
 saveMemory();
 
 
-
 addMessage(
-"🗑️ Pamięć została wyczyszczona.",
+"🗑️ Pamięć wyczyszczona.",
 "ai"
 );
 
 
-
 }
+
 
 
 
@@ -1067,7 +1052,7 @@ addMessage(
 
 
 addMessage(
-"😎 Wariat AI V12.0 gotowy.",
+"😎 Wariat AI V12.1 gotowy.",
 "ai"
 );
 
@@ -1080,12 +1065,9 @@ addMessage(
 
 
 
-
-
 </script>
 
 
 </body>
-
 
 </html>
