@@ -1,47 +1,34 @@
-const express = require("express");
-const cors = require("cors");
+// sprawdzenie czy klucz już istnieje
 
-const app = express();
+window.onload=function(){
 
-app.use(cors());
-app.use(express.json());
+let key=getKey();
 
 
-app.get("/", (req,res)=>{
-    res.send("Wariat AI serwer działa 🤖");
-});
+if(key){
 
-
-app.get("/szukaj", async (req,res)=>{
-
-    const pytanie = req.query.q;
-
-    if(!pytanie){
-        return res.json({
-            error:"Brak pytania"
-        });
-    }
-
-
-    res.json({
-
-        odpowiedz:
-        "Szukam informacji o: " + pytanie,
-
-        zdjecia:[
-            "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Heracleum_mantegazzianum.jpg/640px-Heracleum_mantegazzianum.jpg"
-        ]
-
-    });
-
-
-});
-
-
-app.listen(3000,()=>{
-
-console.log(
-"Wariat AI server działa na porcie 3000"
+addMessage(
+"🧠 Gemini jest gotowy. Wariat ma oczy.",
+"ai"
 );
 
-});
+}
+
+else{
+
+addMessage(
+"👁️ Dodaj klucz Gemini, żeby nauczyć mnie widzieć.",
+"ai"
+);
+
+}
+
+
+};
+
+</script>
+
+
+</body>
+
+</html>
