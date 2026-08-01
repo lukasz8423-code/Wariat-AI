@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Wariat AI V8</title>
+<title>Wariat AI V9</title>
 
 <link rel="manifest" href="manifest.json">
 
@@ -96,91 +96,49 @@ canvas{
 display:none;
 }
 
-.install{
-display:none;
-background:#16a34a;
-width:100%;
-}
-
-
 </style>
 
 </head>
 
-
 <body>
-
 
 <div class="app">
 
-
-<h1>🤖 Wariat AI V8</h1>
-
+<h1>🤖 Wariat AI V9</h1>
 
 <div class="avatar">
 🙂
 </div>
 
-
 <div id="chat"></div>
-
 
 <input id="msg" placeholder="Napisz do mnie">
 
-
-<button onclick="sendMessage()">
-Wyślij
-</button>
-
-
-<button class="install" id="installBtn">
-📲 Zainstaluj Wariat AI
-</button>
-
-
+<button onclick="sendMessage()">Wyślij</button>
 
 <div class="buttons">
 
+<button onclick="startVoice()">🎤 Głos</button>
 
-<button onclick="startVoice()">
-🎤 Głos
-</button>
+<button onclick="startCamera()">📷 Kamera LIVE</button>
 
+<button onclick="takeView()">👁️ Zobacz</button>
 
-<button onclick="startCamera()">
-📷 Kamera LIVE
-</button>
+<button onclick="stopCamera()">⛔ Stop</button>
 
-
-<button onclick="takeView()">
-👁️ Zobacz
-</button>
-
-
-<button onclick="stopCamera()">
-⛔ Stop
-</button>
-
-
-<button onclick="clearMemory()">
-🧹 Pamięć
-</button>
-
+<button onclick="clearMemory()">🧹 Pamięć</button>
 
 </div>
 
 
 <div id="camera"></div>
 
-
 <canvas id="canvas"></canvas>
-
 
 </div>
 
 
 <script>
-
 
 let chat=document.getElementById("chat");
 
@@ -188,33 +146,212 @@ let stream=null;
 
 let video=null;
 
-let installPrompt=null;
+
+
+function addMessage(text,type){
+
+let div=document.createElement("div");
+
+div.className="msg "+type;
+
+div.innerText=text;
+
+chat.appendChild(div);
+
+chat.scrollTop=chat.scrollHeight;
+
+}
 
 
 
-window.addEventListener(
-"beforeinstallprompt",
-(e)=>{
+function speak(text){
 
-e.preventDefault();
+let speech=new SpeechSynthesisUtterance(text);
 
-installPrompt=e;
+speech.lang="pl-PL";
 
-document.getElementById("installBtn").style.display="block";
+speech.rate=1;
+
+speech.pitch=1;
+
+speechSynthesis.speak(speech);
+
+}
+
+
+
+function sendMessage(){
+
+let input=document.getElementById("msg");
+
+let text=input.value.trim();
+
+if(!text)return;
+
+
+addMessage(text,"user");
+
+
+let answer="Jestem Wariat AI. Na razie uczę się Twojego świata. Powiedz mi co mam zrobić.";
+
+addMessage(answer,"ai");
+
+speak(answer);
+
+
+localStorage.setItem(
+"wariat_last",
+text
+);
+
+
+input.value="";
+
+}
+
+
+
+
+function startVoice(){
+
+let SpeechRecognition =
+window.SpeechRecognition ||
+window.webkitSpeechRecognition;
+
+
+if(!SpeechRecognition){
+
+alert("Telefon nie obsługuje rozpoznawania głosu");
+
+return;
+
+}
+
+
+let recognition=new SpeechRecognition();
+
+
+recognition.lang="pl-PL";
+
+recognition.start();
+
+
+
+recognition.onresult=function(event){
+
+let text=event.results[0][0].transcript;
+
+
+document.getElementById("msg").value=text;
+
+
+sendMessage();
+
+
+};
+
+
+}
+
+
+
+async function startCamera(){
+
+try{
+
+
+stream=await navigator.mediaDevices.getUserMedia({
+
+video:true,
+
+audio:false
 
 });
 
 
-document.getElementById("installBtn")
-.onclick=async()=>{
+video=document.createElement("video");
 
-if(installPrompt){
+video.autoplay=true;
 
-installPrompt.prompt();
+video.srcObject=stream;
 
-installPrompt=null;
+
+document.getElementById("camera")
+.appendChild(video);
+
 
 }
 
-};
+catch(e){
 
+alert("Brak dostępu do kamery");
+
+}
+
+}
+
+
+
+
+function takeView(){
+
+if(!video)return;
+
+
+let canvas=document.getElementById("canvas");
+
+canvas.width=video.videoWidth;
+
+canvas.height=video.videoHeight;
+
+
+let ctx=canvas.getContext("2d");
+
+
+ctx.drawImage(video,0,0);
+
+
+addMessage(
+"📷 Wykonałem obraz z kamery. Następny etap to analiza AI.",
+"ai"
+);
+
+
+}
+
+
+
+
+function stopCamera(){
+
+if(stream){
+
+stream.getTracks().forEach(track=>track.stop());
+
+}
+
+
+document.getElementById("camera").innerHTML="";
+
+}
+
+
+
+
+function clearMemory(){
+
+localStorage.clear();
+
+addMessage(
+"Pamięć została wyczyszczona.",
+"ai"
+);
+
+}
+
+
+
+</script>
+
+</body>
+</html>
