@@ -1,15 +1,17 @@
 <!DOCTYPE html>
 <html lang="pl">
+
 <head>
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Wariat AI V9.2</title>
+<title>Wariat AI V9.3</title>
 
 <link rel="manifest" href="manifest.json">
 
 <meta name="theme-color" content="#2563eb">
+
 
 <style>
 
@@ -24,55 +26,79 @@ align-items:center;
 min-height:100vh;
 }
 
+
 .app{
+
 width:95%;
 max-width:520px;
 background:#1f2937;
 padding:20px;
 border-radius:20px;
 box-shadow:0 0 30px black;
+
 }
+
 
 h1{
 text-align:center;
 }
 
+
 .avatar{
+
 font-size:80px;
 text-align:center;
+
 }
 
+
 #chat{
+
 height:280px;
 overflow:auto;
 background:#111827;
 padding:10px;
 border-radius:15px;
+
 }
 
+
 .msg{
+
 padding:10px;
 margin:8px 0;
 border-radius:12px;
+
 }
+
 
 .user{
+
 background:#2563eb;
+
 }
+
 
 .ai{
+
 background:#374151;
+
 }
 
+
 input{
+
 width:90%;
 padding:12px;
 border-radius:10px;
 border:0;
 margin-top:10px;
+
 }
 
+
 button{
+
 width:100%;
 padding:12px;
 border:0;
@@ -81,56 +107,78 @@ background:#2563eb;
 color:white;
 margin-top:10px;
 font-size:16px;
+
 }
 
+
 .buttons{
+
 display:grid;
 grid-template-columns:1fr 1fr;
 gap:10px;
+
 }
 
+
 video{
+
 width:100%;
 border-radius:15px;
 margin-top:15px;
-background:black;
+
 }
 
+
 img{
+
 width:100%;
 border-radius:15px;
 margin-top:10px;
+
 }
 
+
 .settings{
+
 background:#374151;
 padding:10px;
 border-radius:15px;
 margin-top:10px;
 display:none;
+
 }
 
+
 .small{
+
 font-size:12px;
 color:#aaa;
+
 }
+
 
 </style>
 
 </head>
 
+
 <body>
+
 
 <div class="app">
 
-<h1>🤖 Wariat AI V9.2</h1>
+
+<h1>🤖 Wariat AI V9.3</h1>
+
 
 <div class="avatar">
 🙂
 </div>
 
 
+
 <div id="chat"></div>
+
 
 
 <input id="msg" placeholder="Napisz do mnie">
@@ -141,7 +189,9 @@ Wyślij
 </button>
 
 
+
 <div class="buttons">
+
 
 <button onclick="startVoice()">
 🎤 Głos
@@ -172,7 +222,9 @@ Wyślij
 🧹 Pamięć
 </button>
 
+
 </div>
+
 
 
 <div id="camera"></div>
@@ -181,22 +233,29 @@ Wyślij
 <div id="photo"></div>
 
 
+
 <div class="settings" id="settings">
 
-<input id="apiKey" placeholder="Wklej klucz Gemini API">
+
+<input id="apiKey" placeholder="Klucz Gemini API">
+
 
 <button onclick="saveKey()">
-💾 Zapisz klucz
+💾 Zapisz
 </button>
 
+
 <div class="small">
-Klucz zapisuje się tylko na tym telefonie.
+Klucz zapisuje się lokalnie na telefonie.
 </div>
 
+
 </div>
+
 
 
 <script>
+
 
 let chat=document.getElementById("chat");
 
@@ -205,17 +264,24 @@ let stream=null;
 let video=null;
 
 
+
 function addMessage(text,type){
+
 
 let div=document.createElement("div");
 
+
 div.className="msg "+type;
+
 
 div.innerText=text;
 
+
 chat.appendChild(div);
 
+
 chat.scrollTop=chat.scrollHeight;
+
 
 }
 
@@ -223,30 +289,46 @@ chat.scrollTop=chat.scrollHeight;
 
 function speak(text){
 
-let s=new SpeechSynthesisUtterance(text);
 
-s.lang="pl-PL";
+let speech=new SpeechSynthesisUtterance(text);
 
-speechSynthesis.speak(s);
+
+speech.lang="pl-PL";
+
+
+speech.rate=1;
+
+
+speechSynthesis.speak(speech);
+
 
 }
+
 
 
 function openSettings(){
 
+
 let box=document.getElementById("settings");
+
 
 box.style.display =
 box.style.display==="block"
-?"none"
-:"block";
+?
+"none"
+:
+"block";
+
 
 }
 
 
+
 function saveKey(){
 
+
 let key=document.getElementById("apiKey").value.trim();
+
 
 if(!key)return;
 
@@ -265,7 +347,6 @@ addMessage(
 
 }
 
-
 function getKey(){
 
 return localStorage.getItem(
@@ -275,23 +356,33 @@ return localStorage.getItem(
 }
 
 
+
+
 function sendMessage(){
 
 let input=document.getElementById("msg");
 
 let text=input.value.trim();
 
+
 if(!text)return;
 
 
-addMessage(text,"user");
+addMessage(
+text,
+"user"
+);
 
 
 let answer=
-"Jestem Wariat AI V9.2. Czekam na moje oczy Gemini.";
+"Jestem Wariat AI V9.3. Moje oczy Gemini czekają na obraz.";
 
 
-addMessage(answer,"ai");
+addMessage(
+answer,
+"ai"
+);
+
 
 speak(answer);
 
@@ -300,6 +391,9 @@ input.value="";
 
 }
 
+
+
+
 function startVoice(){
 
 let SpeechRecognition =
@@ -307,13 +401,15 @@ window.SpeechRecognition ||
 window.webkitSpeechRecognition;
 
 
+
 if(!SpeechRecognition){
 
-alert("Telefon nie obsługuje rozpoznawania głosu");
+alert("Brak obsługi głosu");
 
 return;
 
 }
+
 
 
 let recognition=new SpeechRecognition();
@@ -321,13 +417,15 @@ let recognition=new SpeechRecognition();
 
 recognition.lang="pl-PL";
 
+
 recognition.start();
 
 
 
 recognition.onresult=function(event){
 
-let text =
+
+let text=
 event.results[0][0].transcript;
 
 
@@ -338,6 +436,7 @@ sendMessage();
 
 
 };
+
 
 }
 
@@ -363,7 +462,7 @@ return;
 try{
 
 
-stream =
+stream=
 await navigator.mediaDevices.getUserMedia({
 
 video:{
@@ -390,8 +489,7 @@ video.srcObject=stream;
 
 
 
-document.getElementById("camera")
-.innerHTML="";
+document.getElementById("camera").innerHTML="";
 
 
 document.getElementById("camera")
@@ -400,7 +498,7 @@ document.getElementById("camera")
 
 
 addMessage(
-"📷 Widzę obraz z kamery.",
+"📷 Kamera uruchomiona.",
 "ai"
 );
 
@@ -408,18 +506,18 @@ addMessage(
 
 }
 
-catch(e){
-
+catch(error){
 
 addMessage(
-"❌ Nie udało się uruchomić kamery.",
+"❌ Błąd kamery: "+error.message,
 "ai"
 );
 
+}
+
 
 }
 
-}
 
 
 
@@ -429,12 +527,10 @@ async function takeView(){
 
 if(!video){
 
-
 addMessage(
 "Najpierw uruchom kamerę.",
 "ai"
 );
-
 
 return;
 
@@ -470,14 +566,13 @@ canvas.toDataURL(
 
 
 
-document.getElementById("photo")
-.innerHTML =
+document.getElementById("photo").innerHTML =
 "<img src='"+image+"'>";
 
 
 
 addMessage(
-"👁️ Analizuję obraz...",
+"👁️ Wariat analizuje obraz...",
 "ai"
 );
 
@@ -486,8 +581,8 @@ addMessage(
 await analyzeImage(image);
 
 
-
 }
+
 
 
 
@@ -498,11 +593,12 @@ async function analyzeImage(image){
 let key=getKey();
 
 
+
 if(!key){
 
 
 addMessage(
-"⚠️ Najpierw dodaj klucz Gemini w ustawieniach.",
+"⚠️ Brak klucza Gemini. Wejdź w ⚙️ Gemini.",
 "ai"
 );
 
@@ -524,7 +620,8 @@ try{
 let response =
 await fetch(
 
-"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key="+key,
+"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key="+key,
+
 
 {
 
@@ -548,7 +645,7 @@ parts:[
 {
 
 text:
-"Opisz dokładnie co widzisz na tym zdjęciu. Odpowiedz po polsku."
+"Jesteś Wariat AI. Opisz po polsku dokładnie co widzisz na zdjęciu."
 
 },
 
@@ -572,6 +669,7 @@ data:base64
 
 })
 
+
 }
 
 );
@@ -583,15 +681,43 @@ await response.json();
 
 
 
+console.log(data);
+
+
+
+if(data.error){
+
+
+addMessage(
+"❌ Gemini błąd: "+data.error.message,
+"ai"
+);
+
+
+return;
+
+}
+
+
+
 let answer =
-data.candidates?.[0]?.content?.parts?.[0]?.text;
+data.candidates?.[0]
+?.content
+?.parts?.[0]
+?.text;
 
 
 
 if(!answer){
 
-answer=
-"Nie udało mi się rozpoznać obrazu.";
+
+addMessage(
+"❌ Gemini nie zwrócił opisu.",
+"ai"
+);
+
+
+return;
 
 }
 
@@ -601,6 +727,7 @@ addMessage(
 "🤖 "+answer,
 "ai"
 );
+
 
 
 speak(answer);
@@ -613,7 +740,7 @@ catch(error){
 
 
 addMessage(
-"❌ Błąd połączenia z Gemini.",
+"❌ Błąd połączenia: "+error.message,
 "ai"
 );
 
@@ -621,11 +748,7 @@ addMessage(
 }
 
 
-
 }
-
-
-
 
 function stopCamera(){
 
@@ -642,9 +765,11 @@ track=>track.stop()
 }
 
 
+
 stream=null;
 
 video=null;
+
 
 
 document.getElementById("camera")
@@ -664,9 +789,11 @@ addMessage(
 
 function clearMemory(){
 
+
 localStorage.removeItem(
 "wariat_last"
 );
+
 
 
 addMessage(
@@ -677,33 +804,40 @@ addMessage(
 
 }
 
-// sprawdzenie czy klucz już istnieje
+
+
 
 window.onload=function(){
+
 
 let key=getKey();
 
 
+
 if(key){
 
+
 addMessage(
-"🧠 Gemini jest gotowy. Wariat ma oczy.",
+"🧠 Gemini gotowy. Wariat ma oczy.",
 "ai"
 );
+
 
 }
-
 else{
 
+
 addMessage(
-"👁️ Dodaj klucz Gemini, żeby nauczyć mnie widzieć.",
+"👁️ Dodaj klucz Gemini.",
 "ai"
 );
+
 
 }
 
 
 };
+
 
 </script>
 
@@ -711,3 +845,4 @@ addMessage(
 </body>
 
 </html>
+
