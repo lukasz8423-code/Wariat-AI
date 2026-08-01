@@ -6,10 +6,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Wariat AI V10.1</title>
+<title>Wariat AI V10.2</title>
 
 <meta name="theme-color" content="#2563eb">
-
 
 <style>
 
@@ -24,7 +23,6 @@ align-items:center;
 min-height:100vh;
 }
 
-
 .app{
 width:95%;
 max-width:520px;
@@ -34,17 +32,14 @@ border-radius:20px;
 box-shadow:0 0 30px black;
 }
 
-
 h1{
 text-align:center;
 }
-
 
 .avatar{
 font-size:80px;
 text-align:center;
 }
-
 
 .status{
 background:#111827;
@@ -53,55 +48,37 @@ border-radius:15px;
 margin-bottom:10px;
 }
 
-
 #chat{
-
 height:300px;
 overflow:auto;
 background:#111827;
 padding:10px;
 border-radius:15px;
-
 }
 
-
 .msg{
-
 padding:10px;
 margin:8px 0;
 border-radius:12px;
-
 }
-
 
 .user{
-
 background:#2563eb;
-
 }
-
 
 .ai{
-
 background:#374151;
-
 }
 
-
-
 input{
-
 width:90%;
 padding:12px;
 border-radius:10px;
 border:0;
 margin-top:10px;
-
 }
 
-
 button{
-
 width:100%;
 padding:12px;
 margin-top:10px;
@@ -110,32 +87,21 @@ border-radius:15px;
 background:#2563eb;
 color:white;
 font-size:16px;
-
 }
 
-
-
 .buttons{
-
 display:grid;
 grid-template-columns:1fr 1fr;
 gap:10px;
-
 }
 
-
-
 video,img{
-
 width:100%;
 border-radius:15px;
 margin-top:15px;
-
 }
 
-
 </style>
-
 
 </head>
 
@@ -146,7 +112,7 @@ margin-top:15px;
 <div class="app">
 
 
-<h1>🤖 Wariat AI V10.1</h1>
+<h1>🤖 Wariat AI V10.2</h1>
 
 
 <div class="avatar">
@@ -154,12 +120,11 @@ margin-top:15px;
 </div>
 
 
-<div class="status">
+<div class="status" id="status">
 
-🧠 Pamięć Wariata aktywna
+🧠 Wariat działa offline
 
 </div>
-
 
 
 <div id="chat"></div>
@@ -220,8 +185,7 @@ Wyślij
 <script>
 
 
-let chat =
-document.getElementById("chat");
+let chat=document.getElementById("chat");
 
 
 let stream=null;
@@ -230,7 +194,7 @@ let video=null;
 
 
 
-let memory =
+let memory=
 JSON.parse(
 localStorage.getItem("wariat_memory")
 )
@@ -255,6 +219,7 @@ JSON.stringify(memory)
 
 
 
+
 function addMessage(text,type){
 
 
@@ -270,8 +235,7 @@ div.innerText=text;
 chat.appendChild(div);
 
 
-chat.scrollTop=
-chat.scrollHeight;
+chat.scrollTop=chat.scrollHeight;
 
 
 }
@@ -279,18 +243,17 @@ chat.scrollHeight;
 
 
 
+
 function speak(text){
 
 
-let speech =
+let speech=
 new SpeechSynthesisUtterance(text);
 
 
 speech.lang="pl-PL";
 
-
 speech.rate=0.95;
-
 
 speech.pitch=1;
 
@@ -299,6 +262,40 @@ speechSynthesis.speak(speech);
 
 
 }
+
+
+
+
+
+function getTimeText(){
+
+
+let now=new Date();
+
+
+let hour=now.getHours();
+
+
+
+if(hour>=5 && hour<12){
+
+return "Dzień dobry";
+
+}
+
+
+if(hour>=12 && hour<18){
+
+return "Dzień dobry";
+
+}
+
+
+return "Dobry wieczór";
+
+
+}
+
 
 
 
@@ -323,7 +320,7 @@ let name=text
 
 
 
-memory.name =
+memory.name=
 name.charAt(0).toUpperCase()
 +
 name.slice(1);
@@ -349,9 +346,10 @@ return "Masz na imię "+memory.name+".";
 
 }
 
-return "Jeszcze mi nie powiedziałeś swojego imienia.";
+return "Jeszcze nie znam Twojego imienia.";
 
 }
+
 
 
 
@@ -360,6 +358,7 @@ if(
 t.startsWith("zapamiętaj") ||
 t.startsWith("zapamietaj")
 ){
+
 
 let info=text
 .replace(/zapamiętaj/i,"")
@@ -375,15 +374,14 @@ memory.facts.push(info);
 saveMemory();
 
 
-return "Dobra, zapamiętałem: "+info;
+return "Zapamiętałem: "+info;
 
 }
 
 
-return "Powiedz mi co mam zapamiętać.";
+return "Powiedz co mam zapamiętać.";
 
 }
-
 
 
 
@@ -393,34 +391,63 @@ t.includes("co pamiętasz") ||
 t.includes("co pamietasz")
 ){
 
-let result="";
+let answer="";
 
 
 if(memory.name){
 
-result+="Twoje imię to "+memory.name+". ";
+answer+="Twoje imię to "+memory.name+". ";
 
 }
 
 
 if(memory.facts.length){
 
-result+="Pamiętam też: "+
+answer+="Pamiętam: "+
 memory.facts.join(", ")+". ";
 
 }
 
 
 
-if(!result){
+if(answer===""){
 
-result="Moja pamięć jest jeszcze pusta.";
+answer="Moja pamięć jest pusta.";
 
 }
 
 
-return result;
+return answer;
 
+}
+
+
+
+
+
+if(t.includes("która godzina") || t.includes("jaka godzina")){
+
+
+let now=new Date();
+
+
+return "Jest teraz godzina "+
+now.getHours()+":"+String(now.getMinutes()).padStart(2,"0")+".";
+
+}
+
+
+
+
+
+if(t.includes("jaki dzień") || t.includes("jaka data")){
+
+
+let now=new Date();
+
+
+return "Dzisiaj jest "+
+now.toLocaleDateString("pl-PL")+".";
 }
 
 
@@ -435,13 +462,62 @@ t.includes("siema")
 ){
 
 
+return getTimeText()+
+" 😎 Jestem Wariat AI. Co robimy?";
+
+
+}
+
+
+
+
+
+if(t.includes("co tam u ciebie")){
+
+
+return "Działam 😎 Nie mam kawy, ale mam procesor. Rozwijamy dalej Wariata.";
+
+
+}
+
+
+
+
+if(t.includes("kim jesteś")){
+
+
+return "Jestem Wariat AI V10.2. Twoim pomocnikiem w telefonie.";
+
+
+}
+
+
+
+
+if(
+t.includes("dzięki") ||
+t.includes("dzieki") ||
+t.includes("dziękuję") ||
+t.includes("dziekuje")
+){
+
+return "Nie ma sprawy 😎";
+
+
+}
+
+
+
+
 let answers=[
 
-"Siema 😎 Co dziś robimy?",
+"Słucham 😎",
 
-"Witaj 😎 Jestem gotowy.",
+"Jestem tutaj.",
 
-"No hej. Działamy dalej?"
+"Działamy dalej.",
+
+"Rozumiem. Mów co robimy."
 
 ];
 
@@ -457,99 +533,30 @@ Math.floor(Math.random()*answers.length)
 
 
 
-if(t.includes("co tam u ciebie")){
-
-
-return "U mnie dobrze 😎 Działam i rozwijamy Wariata krok po kroku.";
-
-
-}
-
-
-
-
-if(t.includes("kim jesteś")){
-
-
-return "Jestem Wariat AI. Twoim cyfrowym pomocnikiem.";
-
-
-}
-
-
-
-
-if(
-t.includes("dziękuję") ||
-t.includes("dziekuje")
-){
-
-
-return "Nie ma sprawy 😎";
-
-}
-
-
-
-
-let fallback=[
-
-"Słucham 😎",
-
-"Jestem tutaj. Mów dalej.",
-
-"Jeszcze się uczę, ale działam.",
-
-"Co robimy dalej?"
-
-];
-
-
-return fallback[
-Math.floor(Math.random()*fallback.length)
-];
-
-
-}
-
-
-
-
 
 
 function sendMessage(){
 
 
-let input =
-document.getElementById("msg");
+let input=document.getElementById("msg");
 
 
-let text =
-input.value.trim();
-
+let text=input.value.trim();
 
 
 if(!text)return;
 
 
 
-addMessage(
-text,
-"user"
-);
+addMessage(text,"user");
 
 
 
-let answer =
-think(text);
+let answer=think(text);
 
 
 
-addMessage(
-answer,
-"ai"
-);
-
+addMessage(answer,"ai");
 
 
 speak(answer);
@@ -560,6 +567,8 @@ input.value="";
 
 
 }
+
+
 
 
 
@@ -576,7 +585,7 @@ window.webkitSpeechRecognition;
 
 if(!Recognition){
 
-alert("Telefon nie obsługuje głosu");
+alert("Brak obsługi głosu");
 
 return;
 
@@ -584,9 +593,7 @@ return;
 
 
 
-let rec =
-new Recognition();
-
+let rec=new Recognition();
 
 
 rec.lang="pl-PL";
@@ -596,15 +603,11 @@ rec.start();
 
 
 
-rec.onresult=function(event){
+rec.onresult=function(e){
 
 
-let text =
-event.results[0][0].transcript;
-
-
-
-document.getElementById("msg").value=text;
+document.getElementById("msg").value =
+e.results[0][0].transcript;
 
 
 sendMessage();
@@ -614,6 +617,9 @@ sendMessage();
 
 
 }
+
+
+
 
 
 
@@ -638,9 +644,7 @@ audio:false
 
 
 
-video =
-document.createElement("video");
-
+video=document.createElement("video");
 
 
 video.autoplay=true;
@@ -666,14 +670,13 @@ addMessage(
 );
 
 
-
 }
 
 catch(e){
 
 
 addMessage(
-"❌ Problem z kamerą.",
+"❌ Nie udało się uruchomić kamery.",
 "ai"
 );
 
@@ -693,12 +696,10 @@ function takeView(){
 
 if(!video){
 
-
 addMessage(
 "Najpierw włącz kamerę.",
 "ai"
 );
-
 
 return;
 
@@ -706,54 +707,45 @@ return;
 
 
 
-let canvas =
-document.createElement("canvas");
+
+let canvas=document.createElement("canvas");
+
+
+canvas.width=video.videoWidth;
+
+
+canvas.height=video.videoHeight;
 
 
 
-canvas.width =
-video.videoWidth;
+let ctx=canvas.getContext("2d");
 
 
-canvas.height =
-video.videoHeight;
-
-
-
-let ctx =
-canvas.getContext("2d");
+ctx.drawImage(video,0,0);
 
 
 
-ctx.drawImage(
-video,
-0,
-0
-);
-
-
-
-let img =
-canvas.toDataURL(
+let img=canvas.toDataURL(
 "image/jpeg",
 0.8
 );
 
 
 
-document.getElementById("photo")
-.innerHTML =
+document.getElementById("photo").innerHTML=
 "<img src='"+img+"'>";
 
 
 
 addMessage(
-"👁️ Zrobiłem zdjęcie. Na razie widzę obraz, ale uczę się rozpoznawania świata.",
+"👁️ Zdjęcie wykonane. W przyszłości dodamy pełne widzenie AI.",
 "ai"
 );
 
 
+
 }
+
 
 
 
@@ -765,7 +757,7 @@ if(stream){
 
 stream.getTracks()
 .forEach(
-track=>track.stop()
+t=>t.stop()
 );
 
 }
@@ -791,15 +783,13 @@ addMessage(
 
 
 
+
+
 function showMemory(){
 
 
-let result =
-think("co pamiętasz");
-
-
 addMessage(
-"🧠 "+result,
+"🧠 "+think("co pamiętasz"),
 "ai"
 );
 
@@ -835,6 +825,7 @@ addMessage(
 
 
 
+
 window.onload=function(){
 
 
@@ -851,7 +842,7 @@ addMessage(
 
 
 addMessage(
-"Siema 😎 Jestem Wariat AI V10.1.",
+getTimeText()+" 😎 Jestem Wariat AI V10.2.",
 "ai"
 );
 
@@ -869,4 +860,5 @@ addMessage(
 </body>
 
 </html>
+
 
