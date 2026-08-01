@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Wariat AI V9.5</title>
+<title>Wariat AI V10</title>
 
 <meta name="theme-color" content="#2563eb">
 
@@ -23,6 +23,7 @@ align-items:center;
 min-height:100vh;
 }
 
+
 .app{
 width:95%;
 max-width:520px;
@@ -32,85 +33,106 @@ border-radius:20px;
 box-shadow:0 0 30px black;
 }
 
+
 h1{
 text-align:center;
 }
+
 
 .avatar{
 font-size:80px;
 text-align:center;
 }
 
-.stats{
+
+.status{
 background:#111827;
 padding:10px;
 border-radius:15px;
 margin-bottom:10px;
-font-size:14px;
 }
 
+
 #chat{
-height:280px;
+
+height:300px;
 overflow:auto;
 background:#111827;
 padding:10px;
 border-radius:15px;
+
 }
 
+
 .msg{
+
 padding:10px;
 margin:8px 0;
 border-radius:12px;
+
 }
+
 
 .user{
+
 background:#2563eb;
+
 }
+
 
 .ai{
+
 background:#374151;
+
 }
 
+
+
 input{
+
 width:90%;
 padding:12px;
 border-radius:10px;
 border:0;
 margin-top:10px;
+
 }
 
+
 button{
+
 width:100%;
 padding:12px;
+margin-top:10px;
 border:0;
 border-radius:15px;
 background:#2563eb;
 color:white;
-margin-top:10px;
 font-size:16px;
+
 }
 
+
 .buttons{
+
 display:grid;
 grid-template-columns:1fr 1fr;
 gap:10px;
+
 }
 
+
 video,img{
+
 width:100%;
 border-radius:15px;
 margin-top:15px;
+
 }
 
-.settings{
-background:#374151;
-padding:10px;
-border-radius:15px;
-display:none;
-margin-top:10px;
-}
 
 </style>
+
 
 </head>
 
@@ -121,26 +143,17 @@ margin-top:10px;
 <div class="app">
 
 
-<h1>🤖 Wariat AI V9.5</h1>
+<h1>🤖 Wariat AI V10</h1>
 
 
 <div class="avatar">
-🙂
+😎
 </div>
 
 
-<div class="stats">
+<div class="status" id="memoryInfo">
 
-🧠 Gemini użycie:<br>
-
-💬 Wiadomości:
-<span id="msgCount">0</span><br>
-
-📷 Zdjęcia:
-<span id="photoCount">0</span><br>
-
-🔢 Razem:
-<span id="totalCount">0</span>
+🧠 Pamięć Wariata aktywna
 
 </div>
 
@@ -160,7 +173,7 @@ Wyślij
 
 
 <button onclick="startVoice()">
-🎤 Głos
+🎤 Mów
 </button>
 
 
@@ -170,7 +183,7 @@ Wyślij
 
 
 <button onclick="takeView()">
-👁️ Zobacz
+👁️ Patrz
 </button>
 
 
@@ -179,13 +192,13 @@ Wyślij
 </button>
 
 
-<button onclick="openSettings()">
-🔑 Gemini
+<button onclick="showMemory()">
+🧠 Pamięć
 </button>
 
 
-<button onclick="resetStats()">
-♻️ Reset
+<button onclick="clearMemory()">
+🗑️ Wyczyść
 </button>
 
 
@@ -194,21 +207,8 @@ Wyślij
 
 <div id="camera"></div>
 
+
 <div id="photo"></div>
-
-
-<div class="settings" id="settings">
-
-
-<input id="apiKey" placeholder="Klucz Gemini">
-
-
-<button onclick="saveKey()">
-💾 Zapisz klucz
-</button>
-
-
-</div>
 
 
 <script>
@@ -222,139 +222,226 @@ let stream=null;
 let video=null;
 
 
-let stats={
 
-messages:0,
+let memory = JSON.parse(
 
-photos:0,
+localStorage.getItem("wariat_memory")
 
-total:0
+)
+
+||
+
+{
+
+name:"",
+
+facts:[]
 
 };
 
 
 
-function loadStats(){
-
-let s=localStorage.getItem("wariat_stats");
-
-if(s){
-
-stats=JSON.parse(s);
-
-}
-
-updateStats();
-
-}
-
-
-
-function saveStats(){
+function saveMemory(){
 
 localStorage.setItem(
-"wariat_stats",
-JSON.stringify(stats)
+
+"wariat_memory",
+
+JSON.stringify(memory)
+
 );
 
-updateStats();
-
 }
 
-
-
-function updateStats(){
-
-document.getElementById("msgCount").innerText=stats.messages;
-
-document.getElementById("photoCount").innerText=stats.photos;
-
-document.getElementById("totalCount").innerText=stats.total;
-
-}
 
 
 
 function addMessage(text,type){
 
+
 let div=document.createElement("div");
+
 
 div.className="msg "+type;
 
+
 div.innerText=text;
+
 
 chat.appendChild(div);
 
+
 chat.scrollTop=chat.scrollHeight;
+
 
 }
 
 function speak(text){
 
-let s=new SpeechSynthesisUtterance(text);
+let speech =
+new SpeechSynthesisUtterance(text);
 
-s.lang="pl-PL";
+speech.lang="pl-PL";
 
-speechSynthesis.speak(s);
+speech.rate=0.95;
 
-}
+speech.pitch=1;
 
-
-
-function getKey(){
-
-return localStorage.getItem("gemini_key");
+speechSynthesis.speak(speech);
 
 }
 
 
 
-function openSettings(){
 
-let box=document.getElementById("settings");
 
-box.style.display =
-box.style.display==="block"
-?
-"none"
-:
-"block";
+function think(text){
+
+let t=text.toLowerCase();
+
+
+
+if(t.includes("mam na imię")){
+
+let name=text
+.split("mam na imię")[1]
+.trim();
+
+
+memory.name=name;
+
+
+saveMemory();
+
+
+return "Zapamiętałem. Od teraz będę mówił do Ciebie "+name+".";
+
+}
+
+
+
+
+if(t.includes("jak mam na imię")){
+
+
+if(memory.name){
+
+return "Masz na imię "+memory.name+".";
+
+}
+
+
+return "Jeszcze mi nie powiedziałeś jak masz na imię.";
 
 }
 
 
 
-function saveKey(){
-
-let key=document.getElementById("apiKey").value.trim();
-
-if(!key)return;
 
 
-localStorage.setItem(
-"gemini_key",
-key
-);
+if(t.includes("zapamiętaj")){
 
 
-addMessage(
-"🔑 Klucz Gemini zapisany.",
-"ai"
-);
+let info=text
+.replace("zapamiętaj","")
+.trim();
+
+
+
+if(info){
+
+memory.facts.push(info);
+
+saveMemory();
+
+
+return "Dobra, zapamiętałem: "+info;
+
+}
 
 
 }
+
+
+
+
+if(t.includes("co pamiętasz")){
+
+
+let wynik="";
+
+
+if(memory.name){
+
+wynik+="Imię: "+memory.name+". ";
+
+}
+
+
+if(memory.facts.length){
+
+wynik+="Pamiętam też: "+memory.facts.join(", ");
+
+}
+
+
+if(!wynik){
+
+wynik="Na razie moja pamięć jest pusta.";
+
+}
+
+
+return wynik;
+
+}
+
+
+
+
+
+if(t.includes("cześć") ||
+t.includes("hej")){
+
+
+return "Siema 😎 Jestem Wariat AI V10. Co robimy?";
+
+}
+
+
+
+
+if(t.includes("kim jesteś")){
+
+
+return "Jestem Wariat AI. Twój cyfrowy pomocnik.";
+
+}
+
+
+
+
+
+return "Słucham. Jeszcze się uczę, ale działam i jestem z Tobą.";
+
+}
+
+
+
 
 
 
 function sendMessage(){
 
+
 let input=document.getElementById("msg");
+
 
 let text=input.value.trim();
 
 
 if(!text)return;
+
 
 
 addMessage(
@@ -363,15 +450,9 @@ text,
 );
 
 
-stats.messages++;
 
-stats.total++;
+let answer=think(text);
 
-saveStats();
-
-
-let answer=
-"Jestem Wariat AI V9.5. Czekam na obraz z kamery.";
 
 
 addMessage(
@@ -380,50 +461,64 @@ answer,
 );
 
 
+
 speak(answer);
+
 
 
 input.value="";
 
-}
 
+}
 
 
 
 
 function startVoice(){
 
-let SR =
+
+let Recognition =
 window.SpeechRecognition ||
 window.webkitSpeechRecognition;
 
 
-if(!SR){
 
-alert("Brak obsługi głosu");
+if(!Recognition){
+
+alert("Telefon nie obsługuje rozpoznawania głosu");
 
 return;
 
 }
 
 
-let r=new SR();
+
+let rec=new Recognition();
 
 
-r.lang="pl-PL";
-
-r.start();
+rec.lang="pl-PL";
 
 
-r.onresult=function(e){
+rec.start();
 
-document.getElementById("msg").value =
-e.results[0][0].transcript;
+
+
+rec.onresult=function(event){
+
+
+let text =
+event.results[0][0].transcript;
+
+
+
+document.getElementById("msg").value=text;
 
 
 sendMessage();
 
+
 };
+
 
 
 }
@@ -450,18 +545,21 @@ audio:false
 });
 
 
+
 video=document.createElement("video");
+
 
 video.autoplay=true;
 
 video.playsInline=true;
 
-video.muted=true;
 
 video.srcObject=stream;
 
 
-document.getElementById("camera").innerHTML="";
+
+document.getElementById("camera")
+.innerHTML="";
 
 
 document.getElementById("camera")
@@ -470,37 +568,36 @@ document.getElementById("camera")
 
 
 addMessage(
-"📷 Kamera działa.",
+"📷 Kamera uruchomiona.",
 "ai"
 );
 
 
 
 }
+
 
 catch(e){
 
+
 addMessage(
-"❌ Kamera: "+e.message,
+"❌ Nie mogę uruchomić kamery.",
 "ai"
 );
 
-}
-
 
 }
 
 
+}
 
-
-
-async function takeView(){
+function takeView(){
 
 
 if(!video){
 
 addMessage(
-"Najpierw uruchom kamerę.",
+"Najpierw włącz kamerę.",
 "ai"
 );
 
@@ -518,6 +615,7 @@ canvas.width=video.videoWidth;
 canvas.height=video.videoHeight;
 
 
+
 let ctx=canvas.getContext("2d");
 
 
@@ -532,165 +630,20 @@ let img=canvas.toDataURL(
 
 
 
-document.getElementById("photo").innerHTML =
+document.getElementById("photo")
+.innerHTML=
 "<img src='"+img+"'>";
 
 
 
-stats.photos++;
-
-stats.total++;
-
-saveStats();
-
-
-
-await analyzeImage(img);
-
-
-}
-
-
-
-
-
-
-async function analyzeImage(img){
-
-
-let key=getKey();
-
-
-
-if(!key){
-
 addMessage(
-"❌ Brak klucza Gemini.",
-"ai"
-);
-
-return;
-
-}
-
-
-
-let base64=img.split(",")[1];
-
-
-
-try{
-
-
-let res=await fetch(
-
-"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key="+key,
-
-{
-
-method:"POST",
-
-headers:{
-"Content-Type":"application/json"
-},
-
-body:JSON.stringify({
-
-contents:[{
-
-parts:[
-
-{
-
-text:
-"Opisz dokładnie po polsku co widzisz na zdjęciu."
-
-},
-
-{
-
-inline_data:{
-
-mime_type:"image/jpeg",
-
-data:base64
-
-}
-
-}
-
-]
-
-}]
-
-})
-
-}
-
-);
-
-
-
-let data=await res.json();
-
-
-
-if(data.error){
-
-addMessage(
-"❌ Gemini: "+data.error.message,
-"ai"
-);
-
-return;
-
-}
-
-
-
-let answer =
-data.candidates?.[0]?.content?.parts?.[0]?.text;
-
-
-
-if(!answer){
-
-addMessage(
-"❌ Gemini nie zwrócił odpowiedzi.",
-"ai"
-);
-
-return;
-
-}
-
-
-
-addMessage(
-"🤖 "+answer,
+"👁️ Widzę obraz z kamery. Na razie uczę się rozpoznawania świata.",
 "ai"
 );
 
 
-speak(answer);
-
 
 }
-
-
-catch(e){
-
-addMessage(
-"❌ Błąd: "+e.message,
-"ai"
-);
-
-}
-
-
-}
-
-
 
 
 
@@ -701,7 +654,9 @@ function stopCamera(){
 if(stream){
 
 stream.getTracks()
-.forEach(t=>t.stop());
+.forEach(
+track=>track.stop()
+);
 
 }
 
@@ -714,59 +669,82 @@ video=null;
 document.getElementById("camera").innerHTML="";
 
 
-}
-
-
-
-
-
-function resetStats(){
-
-
-stats={
-
-messages:0,
-
-photos:0,
-
-total:0
-
-};
-
-
-saveStats();
-
-
 addMessage(
-"♻️ Liczniki wyzerowane.",
+"⛔ Kamera wyłączona.",
 "ai"
 );
 
 
 }
 
+
+
+
+function showMemory(){
+
+
+let text=think("co pamiętasz");
+
+
+addMessage(
+"🧠 "+text,
+"ai"
+);
+
+
+
+}
+
+
+
+
+function clearMemory(){
+
+
+memory={
+
+name:"",
+
+facts:[]
+
+};
+
+
+
+saveMemory();
+
+
+
+addMessage(
+"🗑️ Pamięć wyczyszczona.",
+"ai"
+);
+
+
+
+}
 
 
 
 
 window.onload=function(){
 
-loadStats();
 
-
-if(getKey()){
+if(memory.name){
 
 addMessage(
-"🧠 Gemini gotowy.",
+"Witaj ponownie "+memory.name+" 😎",
 "ai"
 );
 
 }else{
 
+
 addMessage(
-"🔑 Dodaj klucz Gemini.",
+"Siema 😎 Jestem Wariat AI V10.",
 "ai"
 );
+
 
 }
 
