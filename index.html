@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Wariat AI V9</title>
+<title>Wariat AI V9.1</title>
 
 <link rel="manifest" href="manifest.json">
 
@@ -78,6 +78,11 @@ border-radius:15px;
 background:#2563eb;
 color:white;
 margin-top:10px;
+cursor:pointer;
+}
+
+button:active{
+transform:scale(0.97);
 }
 
 .buttons{
@@ -90,55 +95,100 @@ video{
 width:100%;
 border-radius:15px;
 margin-top:15px;
+background:black;
+}
+
+#camera{
+overflow:hidden;
 }
 
 canvas{
 display:none;
 }
 
+.photo{
+margin-top:10px;
+width:100%;
+border-radius:15px;
+}
+
 </style>
 
 </head>
 
+
 <body>
+
 
 <div class="app">
 
-<h1>🤖 Wariat AI V9</h1>
+
+<h1>🤖 Wariat AI V9.1</h1>
+
 
 <div class="avatar">
 🙂
 </div>
 
+
 <div id="chat"></div>
+
 
 <input id="msg" placeholder="Napisz do mnie">
 
-<button onclick="sendMessage()">Wyślij</button>
+
+<button onclick="sendMessage()">
+Wyślij
+</button>
+
+
 
 <div class="buttons">
 
-<button onclick="startVoice()">🎤 Głos</button>
 
-<button onclick="startCamera()">📷 Kamera LIVE</button>
+<button onclick="startVoice()">
+🎤 Głos
+</button>
 
-<button onclick="takeView()">👁️ Zobacz</button>
 
-<button onclick="stopCamera()">⛔ Stop</button>
+<button onclick="startCamera()">
+📷 Kamera LIVE
+</button>
 
-<button onclick="clearMemory()">🧹 Pamięć</button>
+
+<button onclick="takeView()">
+👁️ Zobacz
+</button>
+
+
+<button onclick="stopCamera()">
+⛔ Stop
+</button>
+
+
+<button onclick="clearMemory()">
+🧹 Pamięć
+</button>
+
 
 </div>
 
 
 <div id="camera"></div>
 
+
 <canvas id="canvas"></canvas>
+
+
+<div id="photoResult"></div>
+
 
 </div>
 
 
+
 <script>
+
 
 let chat=document.getElementById("chat");
 
@@ -164,6 +214,7 @@ chat.scrollTop=chat.scrollHeight;
 
 
 
+
 function speak(text){
 
 let speech=new SpeechSynthesisUtterance(text);
@@ -174,9 +225,10 @@ speech.rate=1;
 
 speech.pitch=1;
 
-speechSynthesis.speak(speech);
+window.speechSynthesis.speak(speech);
 
 }
+
 
 
 
@@ -186,15 +238,19 @@ let input=document.getElementById("msg");
 
 let text=input.value.trim();
 
+
 if(!text)return;
 
 
 addMessage(text,"user");
 
 
-let answer="Jestem Wariat AI. Na razie uczę się Twojego świata. Powiedz mi co mam zrobić.";
+let answer=
+"Jestem Wariat AI V9.1. Widzę, że napisałeś: "+text;
+
 
 addMessage(answer,"ai");
+
 
 speak(answer);
 
@@ -221,7 +277,7 @@ window.webkitSpeechRecognition;
 
 if(!SpeechRecognition){
 
-alert("Telefon nie obsługuje rozpoznawania głosu");
+alert("Brak obsługi głosu w tej przeglądarce");
 
 return;
 
@@ -239,7 +295,9 @@ recognition.start();
 
 recognition.onresult=function(event){
 
-let text=event.results[0][0].transcript;
+
+let text=
+event.results[0][0].transcript;
 
 
 document.getElementById("msg").value=text;
@@ -253,38 +311,67 @@ sendMessage();
 
 }
 
-
-
 async function startCamera(){
+
+// blokada przed stworzeniem drugiej kamery
+if(video){
+addMessage(
+"📷 Kamera już działa.",
+"ai"
+);
+return;
+}
+
 
 try{
 
 
-stream=await navigator.mediaDevices.getUserMedia({
+stream = await navigator.mediaDevices.getUserMedia({
 
-video:true,
+video:{
+facingMode:"environment"
+},
 
 audio:false
 
 });
 
 
+
 video=document.createElement("video");
+
 
 video.autoplay=true;
 
+video.playsInline=true;
+
+video.muted=true;
+
+
 video.srcObject=stream;
+
 
 
 document.getElementById("camera")
 .appendChild(video);
 
 
+
+addMessage(
+"📷 Kamera uruchomiona. Jestem gotowy patrzeć.",
+"ai"
+);
+
+
+
 }
 
-catch(e){
+catch(error){
 
-alert("Brak dostępu do kamery");
+addMessage(
+"❌ Nie mam dostępu do kamery.",
+"ai"
+);
 
 }
 
@@ -295,26 +382,73 @@ alert("Brak dostępu do kamery");
 
 function takeView(){
 
-if(!video)return;
+
+if(!video){
+
+addMessage(
+"Najpierw uruchom kamerę.",
+"ai"
+);
+
+return;
+
+}
+
 
 
 let canvas=document.getElementById("canvas");
+
 
 canvas.width=video.videoWidth;
 
 canvas.height=video.videoHeight;
 
 
+
 let ctx=canvas.getContext("2d");
 
 
-ctx.drawImage(video,0,0);
+ctx.drawImage(
+video,
+0,
+0,
+canvas.width,
+canvas.height
+);
+
+
+
+let image=canvas.toDataURL(
+"image/jpeg",
+0.8
+);
+
+
+
+let img=document.createElement("img");
+
+
+img.src=image;
+
+
+img.className="photo";
+
+
+
+document.getElementById("photoResult")
+.innerHTML="";
+
+
+document.getElementById("photoResult")
+.appendChild(img);
+
 
 
 addMessage(
-"📷 Wykonałem obraz z kamery. Następny etap to analiza AI.",
+"👁️ Zrobiłem zdjęcie. Następny etap: podłączenie mojego wzroku AI.",
 "ai"
 );
+
 
 
 }
@@ -324,14 +458,33 @@ addMessage(
 
 function stopCamera(){
 
+
 if(stream){
 
-stream.getTracks().forEach(track=>track.stop());
+
+stream.getTracks().forEach(
+track=>track.stop()
+);
+
 
 }
 
 
-document.getElementById("camera").innerHTML="";
+
+stream=null;
+
+video=null;
+
+
+document.getElementById("camera")
+.innerHTML="";
+
+
+addMessage(
+"⛔ Kamera zatrzymana.",
+"ai"
+);
+
 
 }
 
@@ -340,18 +493,48 @@ document.getElementById("camera").innerHTML="";
 
 function clearMemory(){
 
+
 localStorage.clear();
 
+
 addMessage(
-"Pamięć została wyczyszczona.",
+"🧹 Pamięć została wyczyszczona.",
+"ai"
+);
+
+
+}
+
+
+
+
+// wczytanie ostatniej wiadomości
+
+window.onload=function(){
+
+
+let last=
+localStorage.getItem("wariat_last");
+
+
+if(last){
+
+addMessage(
+"Zapamiętałem ostatnio: "+last,
 "ai"
 );
 
 }
 
 
+};
+
+
+
 
 </script>
 
+
 </body>
+
 </html>
